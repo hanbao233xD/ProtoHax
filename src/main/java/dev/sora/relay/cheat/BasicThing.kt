@@ -6,6 +6,7 @@ import dev.sora.relay.game.GameSession
 abstract class BasicThing {
 
     lateinit var session: GameSession
+    lateinit var mc: GameSession
 
     protected fun chat(msg: String) {
         chat(session, msg)

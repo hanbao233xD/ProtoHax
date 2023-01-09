@@ -6,9 +6,15 @@ import dev.sora.relay.game.GameSession
 class ModuleManager(private val session: GameSession) {
 
     val modules = mutableListOf<CheatModule>()
-
+    fun getModuleByName(name:String):CheatModule?{
+        for (module in modules) {
+            if(module.name.equals(name,true)) return module
+        }
+        return null
+    }
     fun registerModule(module: CheatModule) {
         module.session = session
+        module.mc = session
         modules.add(module)
         session.eventManager.registerListener(module)
     }
@@ -27,8 +33,14 @@ class ModuleManager(private val session: GameSession) {
         registerModule(ModuleAntiBot)
         registerModule(ModuleNoFall())
         registerModule(ModuleAntiKick())
-        registerModule(ModuleAutoSprint())
+        registerModule(ModuleScaffold())
+        registerModule(ModuleHUDStatus())
+        registerModule(ModuleSpeed())
         registerModule(ModuleAntiBlind())
         registerModule(ModuleFastBreak())
+        registerModule(ModuleTargetStrafe())
+        for (module in modules) {
+            module.session.moduleManager=this;
+        }
     }
 }

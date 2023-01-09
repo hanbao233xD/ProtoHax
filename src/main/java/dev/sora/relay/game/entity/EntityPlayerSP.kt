@@ -2,6 +2,7 @@ package dev.sora.relay.game.entity
 
 import com.nukkitx.math.vector.Vector3f
 import com.nukkitx.protocol.bedrock.BedrockPacket
+import com.nukkitx.protocol.bedrock.data.PlayerAuthInputData
 import com.nukkitx.protocol.bedrock.data.SoundEvent
 import com.nukkitx.protocol.bedrock.data.inventory.ItemData
 import com.nukkitx.protocol.bedrock.data.inventory.TransactionType
@@ -16,7 +17,13 @@ class EntityPlayerSP : EntityPlayer(0L, UUID.randomUUID(), "") {
     override var entityId: Long = 0L
     var heldItemSlot = 0
         private set
-
+    var onGround = true
+    var inputData = EnumSet.noneOf(PlayerAuthInputData::class.java)
+    var currentItem : ItemData? = null
+    var moveStrafing = 0.0f
+    var moveForward = 0.0f
+    var moveStrafing2 = 0.0f
+    var moveForward2 = 0.0f
     fun teleport(x: Double, y: Double, z: Double, netSession: RakNetRelaySession) {
         move(x, y, z)
         netSession.inboundPacket(MovePlayerPacket().apply {
@@ -38,6 +45,10 @@ class EntityPlayerSP : EntityPlayer(0L, UUID.randomUUID(), "") {
             session.onTick()
             tickExists++
         } else if (packet is PlayerAuthInputPacket) {
+            inputData= packet.inputData as EnumSet<PlayerAuthInputData>?
+            moveStrafing = packet.motion.x
+            moveForward = packet.motion.y
+            onGround=packet.motion.y==0f
             move(packet.position)
             rotate(packet.rotation)
             session.onTick()
@@ -80,6 +91,20 @@ class EntityPlayerSP : EntityPlayer(0L, UUID.randomUUID(), "") {
             playerPosition = session.thePlayer.vec3Position
             clickPosition = Vector3f.ZERO
         })
+    }
+
+    fun jump(session:GameSession) {
+        session.netSession.inboundPacket(SetEntityMotionPacket().apply {
+            runtimeEntityId=entityId
+            motion = Vector3f.from(0.0f,0.42f,0.0f)
+        })
+    }
+
+    fun getEyeHeight() : Double{
+        return posY
+    }
+    fun getJavaPosY() : Double{
+        return posY-1.62
     }
 
     enum class SwingMode {

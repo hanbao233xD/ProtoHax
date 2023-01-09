@@ -21,6 +21,7 @@ import dev.sora.relay.game.event.impl.EventTick
 import dev.sora.relay.utils.timing.ClickTimer
 import java.lang.Math.atan2
 import java.lang.Math.sqrt
+import java.util.*
 import kotlin.math.pow
 
 class ModuleKillAura : CheatModule("KillAura") {
@@ -34,7 +35,8 @@ class ModuleKillAura : CheatModule("KillAura") {
     private var rotation: Pair<Float, Float>? = null
 
     private val clickTimer = ClickTimer()
-
+    lateinit var entityList : List<Entity>
+    var attackList : List<Entity> = LinkedList<Entity>()
     @Listen
     fun onTick(event: EventTick) {
         if (cpsValue.get() < 20 && !clickTimer.canClick())
@@ -43,9 +45,8 @@ class ModuleKillAura : CheatModule("KillAura") {
         val session = event.session
 
         val range = rangeValue.get().pow(2)
-        val entityList = session.theWorld.entityMap.values.filter { it is EntityPlayer && it.distanceSq(session.thePlayer) < range && !it.isBot(session) }
+        entityList = session.theWorld.entityMap.values.filter { it is EntityPlayer && it.distanceSq(session.thePlayer) < range && !it.isBot(session) }
         if (entityList.isEmpty()) return
-
         val swingMode = when(swingValue.get()) {
             "Both" -> EntityPlayerSP.SwingMode.BOTH
             "Client" -> EntityPlayerSP.SwingMode.CLIENTSIDE

@@ -2,11 +2,15 @@ package dev.sora.relay.game
 
 import com.google.gson.JsonParser
 import com.nukkitx.protocol.bedrock.BedrockPacket
+import com.nukkitx.protocol.bedrock.data.AuthoritativeMovementMode
+import com.nukkitx.protocol.bedrock.data.SyncedPlayerMovementSettings
 import com.nukkitx.protocol.bedrock.packet.LoginPacket
 import com.nukkitx.protocol.bedrock.packet.RespawnPacket
+import com.nukkitx.protocol.bedrock.packet.SetEntityMotionPacket
 import com.nukkitx.protocol.bedrock.packet.StartGamePacket
 import dev.sora.relay.RakNetRelaySession
 import dev.sora.relay.RakNetRelaySessionListener
+import dev.sora.relay.cheat.module.ModuleManager
 import dev.sora.relay.game.entity.EntityPlayerSP
 import dev.sora.relay.game.event.EventManager
 import dev.sora.relay.game.event.impl.EventPacketInbound
@@ -20,7 +24,7 @@ class GameSession : RakNetRelaySessionListener.PacketListener {
 
     val thePlayer = EntityPlayerSP()
     val theWorld = WorldClient(this)
-
+    lateinit var moduleManager : ModuleManager;
     val eventManager = EventManager()
 
     lateinit var netSession: RakNetRelaySession
@@ -45,6 +49,14 @@ class GameSession : RakNetRelaySessionListener.PacketListener {
         } else if (packet is RespawnPacket) {
             thePlayer.entityId = packet.runtimeEntityId
             theWorld.entityMap.clear()
+        }else if (packet is StartGamePacket){
+            event.cancel()
+            packet.playerMovementSettings= SyncedPlayerMovementSettings().apply {
+                movementMode= AuthoritativeMovementMode.SERVER
+                rewindHistorySize=0
+                isServerAuthoritativeBlockBreaking=true
+            }
+            netSession.inboundPacket(packet)
         }
         thePlayer.onPacket(packet)
         theWorld.onPacket(packet)
