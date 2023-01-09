@@ -1,4 +1,4 @@
-package dev.sora.relay.cheat.module.impl
+package dev.sora.relay.cheat.module.impl.player
 
 import com.nukkitx.protocol.bedrock.packet.*
 import dev.sora.relay.cheat.module.CheatModule
@@ -6,7 +6,7 @@ import dev.sora.relay.game.event.Listen
 import dev.sora.relay.game.event.impl.EventPacketInbound
 import dev.sora.relay.game.event.impl.EventPacketOutbound
 
-class ModuleHUDStatus : CheatModule("Scaffold") {
+class ModuleHUDStatus : CheatModule("HUDStatus") {
     @Listen
     fun onPacketInbound(event: EventPacketInbound) {
         val packet = event.packet

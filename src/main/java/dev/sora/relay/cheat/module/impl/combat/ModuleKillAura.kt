@@ -1,17 +1,12 @@
-package dev.sora.relay.cheat.module.impl
+package dev.sora.relay.cheat.module.impl.combat
 
 import com.nukkitx.math.vector.Vector3f
-import com.nukkitx.protocol.bedrock.data.SoundEvent
-import com.nukkitx.protocol.bedrock.data.inventory.ItemData
-import com.nukkitx.protocol.bedrock.data.inventory.TransactionType
 import com.nukkitx.protocol.bedrock.packet.*
 import dev.sora.relay.cheat.module.CheatModule
-import dev.sora.relay.cheat.module.impl.ModuleAntiBot.isBot
-import dev.sora.relay.cheat.value.BoolValue
+import dev.sora.relay.cheat.module.impl.combat.ModuleAntiBot.isBot
 import dev.sora.relay.cheat.value.FloatValue
 import dev.sora.relay.cheat.value.IntValue
 import dev.sora.relay.cheat.value.ListValue
-import dev.sora.relay.game.GameSession
 import dev.sora.relay.game.entity.Entity
 import dev.sora.relay.game.entity.EntityPlayer
 import dev.sora.relay.game.entity.EntityPlayerSP

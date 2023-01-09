@@ -1,4 +1,4 @@
-package dev.sora.relay.cheat.module.impl
+package dev.sora.relay.cheat.module.impl.misc
 
 import com.google.gson.Gson
 import com.google.gson.JsonParser

@@ -1,7 +1,7 @@
-package dev.sora.relay.cheat.module.impl
+package dev.sora.relay.cheat.module.impl.combat
 
 import dev.sora.relay.cheat.module.CheatModule
-import dev.sora.relay.cheat.module.impl.ModuleAntiBot.isBot
+import dev.sora.relay.cheat.module.impl.combat.ModuleAntiBot.isBot
 import dev.sora.relay.cheat.value.FloatValue
 import dev.sora.relay.cheat.value.IntValue
 import dev.sora.relay.cheat.value.ListValue

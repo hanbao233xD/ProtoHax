@@ -1,4 +1,4 @@
-package dev.sora.relay.cheat.module.impl
+package dev.sora.relay.cheat.module.impl.player
 
 import com.nukkitx.protocol.bedrock.data.SoundEvent
 import com.nukkitx.protocol.bedrock.packet.LevelSoundEventPacket

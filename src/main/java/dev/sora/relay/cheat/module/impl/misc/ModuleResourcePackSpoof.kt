@@ -1,4 +1,4 @@
-package dev.sora.relay.cheat.module.impl
+package dev.sora.relay.cheat.module.impl.misc
 
 import com.nukkitx.protocol.bedrock.packet.ResourcePackStackPacket
 import com.nukkitx.protocol.bedrock.packet.ResourcePacksInfoPacket

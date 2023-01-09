@@ -1,4 +1,4 @@
-package dev.sora.relay.cheat.module.impl
+package dev.sora.relay.cheat.module.impl.misc
 
 import com.nukkitx.math.vector.Vector2f
 import com.nukkitx.protocol.bedrock.data.SoundEvent

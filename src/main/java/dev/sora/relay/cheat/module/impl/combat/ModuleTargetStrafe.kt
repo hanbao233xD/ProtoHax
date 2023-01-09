@@ -1,4 +1,4 @@
-package dev.sora.relay.cheat.module.impl
+package dev.sora.relay.cheat.module.impl.combat
 
 import com.nukkitx.math.vector.Vector3f
 import com.nukkitx.protocol.bedrock.packet.SetEntityMotionPacket

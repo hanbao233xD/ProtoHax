@@ -22,8 +22,6 @@ class EntityPlayerSP : EntityPlayer(0L, UUID.randomUUID(), "") {
     var currentItem : ItemData? = null
     var moveStrafing = 0.0f
     var moveForward = 0.0f
-    var moveStrafing2 = 0.0f
-    var moveForward2 = 0.0f
     fun teleport(x: Double, y: Double, z: Double, netSession: RakNetRelaySession) {
         move(x, y, z)
         netSession.inboundPacket(MovePlayerPacket().apply {

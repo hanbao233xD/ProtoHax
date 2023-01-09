@@ -1,6 +1,10 @@
 package dev.sora.relay.cheat.module
 
-import dev.sora.relay.cheat.module.impl.*
+import dev.sora.relay.cheat.module.impl.combat.*
+import dev.sora.relay.cheat.module.impl.misc.*
+import dev.sora.relay.cheat.module.impl.movement.ModuleFly
+import dev.sora.relay.cheat.module.impl.movement.ModuleSpeed
+import dev.sora.relay.cheat.module.impl.player.*
 import dev.sora.relay.game.GameSession
 
 class ModuleManager(private val session: GameSession) {
@@ -29,18 +33,20 @@ class ModuleManager(private val session: GameSession) {
         registerModule(ModuleOpFightBot())
         registerModule(ModuleNoSkin())
         registerModule(ModuleDeviceSpoof())
+        registerModule(ModulePacketLogger())
         registerModule(ModuleResourcePackSpoof())
         registerModule(ModuleAntiBot)
         registerModule(ModuleNoFall())
         registerModule(ModuleAntiKick())
         registerModule(ModuleScaffold())
         registerModule(ModuleHUDStatus())
+        registerModule(ModuleTeams())
         registerModule(ModuleSpeed())
         registerModule(ModuleAntiBlind())
         registerModule(ModuleFastBreak())
         registerModule(ModuleTargetStrafe())
         for (module in modules) {
-            module.session.moduleManager=this;
+            module.session.moduleManager=this
         }
     }
 }

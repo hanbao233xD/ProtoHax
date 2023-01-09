@@ -1,10 +1,8 @@
-package dev.sora.relay.cheat.module.impl
+package dev.sora.relay.cheat.module.impl.player
 
 import com.nukkitx.math.vector.Vector3f
 import com.nukkitx.math.vector.Vector3i
-import com.nukkitx.protocol.bedrock.data.AuthoritativeMovementMode
 import com.nukkitx.protocol.bedrock.data.PlayerActionType
-import com.nukkitx.protocol.bedrock.data.SyncedPlayerMovementSettings
 import com.nukkitx.protocol.bedrock.data.inventory.TransactionType
 import com.nukkitx.protocol.bedrock.packet.*
 import dev.sora.relay.cheat.module.CheatModule
@@ -12,7 +10,7 @@ import dev.sora.relay.game.event.Listen
 import dev.sora.relay.game.event.impl.EventPacketInbound
 import dev.sora.relay.game.event.impl.EventPacketOutbound
 import dev.sora.relay.game.event.impl.EventTick
-import java.lang.Math.round
+import dev.sora.relay.game.utils.movement.MovementUtils.isMoving
 
 class ModuleScaffold : CheatModule("Scaffold") {
     @Listen
@@ -39,6 +37,8 @@ class ModuleScaffold : CheatModule("Scaffold") {
     fun onPacketOutbound(event: EventPacketOutbound) {
         val packet = event.packet
         if (packet is PlayerAuthInputPacket) {
+            if(packet.tick%2!=0L) return
+            if(!isMoving(mc)) return
             if (session.thePlayer.currentItem == null) return
             session.sendPacket(PlayerActionPacket().apply {
                 action = PlayerActionType.ITEM_USE_ON_START

@@ -4,10 +4,7 @@ import com.google.gson.JsonParser
 import com.nukkitx.protocol.bedrock.BedrockPacket
 import com.nukkitx.protocol.bedrock.data.AuthoritativeMovementMode
 import com.nukkitx.protocol.bedrock.data.SyncedPlayerMovementSettings
-import com.nukkitx.protocol.bedrock.packet.LoginPacket
-import com.nukkitx.protocol.bedrock.packet.RespawnPacket
-import com.nukkitx.protocol.bedrock.packet.SetEntityMotionPacket
-import com.nukkitx.protocol.bedrock.packet.StartGamePacket
+import com.nukkitx.protocol.bedrock.packet.*
 import dev.sora.relay.RakNetRelaySession
 import dev.sora.relay.RakNetRelaySessionListener
 import dev.sora.relay.cheat.module.ModuleManager
@@ -16,6 +13,7 @@ import dev.sora.relay.game.event.EventManager
 import dev.sora.relay.game.event.impl.EventPacketInbound
 import dev.sora.relay.game.event.impl.EventPacketOutbound
 import dev.sora.relay.game.event.impl.EventTick
+import dev.sora.relay.game.utils.TimerUtil
 import dev.sora.relay.game.world.WorldClient
 import dev.sora.relay.utils.base64Decode
 import java.util.*
@@ -24,11 +22,12 @@ class GameSession : RakNetRelaySessionListener.PacketListener {
 
     val thePlayer = EntityPlayerSP()
     val theWorld = WorldClient(this)
-    lateinit var moduleManager : ModuleManager;
+    lateinit var moduleManager: ModuleManager
     val eventManager = EventManager()
 
     lateinit var netSession: RakNetRelaySession
-
+    private val hookedTimer: TimerUtil = TimerUtil()
+    var hooked = false
     var xuid = ""
     var identity = UUID.randomUUID().toString()
     var displayName = "Player"
@@ -44,19 +43,32 @@ class GameSession : RakNetRelaySessionListener.PacketListener {
         }
 
         if (packet is StartGamePacket) {
+            event.cancel()
+            packet.playerMovementSettings = SyncedPlayerMovementSettings().apply {
+                movementMode = AuthoritativeMovementMode.SERVER
+                rewindHistorySize = 0
+                isServerAuthoritativeBlockBreaking = true
+            }
+            packet.authoritativeMovementMode = AuthoritativeMovementMode.SERVER
+            println("Hooked$packet")
+            hookedTimer.reset()
+            netSession.inboundPacket(packet)
             thePlayer.entityId = packet.runtimeEntityId
             theWorld.entityMap.clear()
+            return false
         } else if (packet is RespawnPacket) {
             thePlayer.entityId = packet.runtimeEntityId
             theWorld.entityMap.clear()
-        }else if (packet is StartGamePacket){
-            event.cancel()
-            packet.playerMovementSettings= SyncedPlayerMovementSettings().apply {
-                movementMode= AuthoritativeMovementMode.SERVER
-                rewindHistorySize=0
-                isServerAuthoritativeBlockBreaking=true
-            }
-            netSession.inboundPacket(packet)
+        }
+        if (hookedTimer.delay(7500f) && !hooked) {
+            netSession.inboundPacket(TextPacket().apply {
+                type = TextPacket.Type.RAW
+                isNeedsTranslation = false
+                message = "[§9§lProtoHax§r] Hooked StartGamePacket, Welcome!"
+                xuid = ""
+                sourceName = ""
+            })
+            hooked = true
         }
         thePlayer.onPacket(packet)
         theWorld.onPacket(packet)
@@ -74,7 +86,8 @@ class GameSession : RakNetRelaySessionListener.PacketListener {
         if (packet is LoginPacket) {
             val body = JsonParser.parseString(packet.chainData.toString()).asJsonObject.getAsJsonArray("chain")
             for (chain in body) {
-                val chainBody = JsonParser.parseString(base64Decode(chain.asString.split(".")[1]).toString(Charsets.UTF_8)).asJsonObject
+                val chainBody =
+                    JsonParser.parseString(base64Decode(chain.asString.split(".")[1]).toString(Charsets.UTF_8)).asJsonObject
                 if (chainBody.has("extraData")) {
                     val xData = chainBody.getAsJsonObject("extraData")
                     xuid = xData.get("XUID").asString
@@ -82,10 +95,19 @@ class GameSession : RakNetRelaySessionListener.PacketListener {
                     displayName = xData.get("displayName").asString
                 }
             }
-        } else {
-            thePlayer.handleClientPacket(packet, this)
+        } else if (packet is PlayerAuthInputPacket) {
+            netSession.outboundPacket(MovePlayerPacket().apply {
+                runtimeEntityId = thePlayer.entityId
+                position = packet.position
+                rotation = packet.rotation
+                mode = MovePlayerPacket.Mode.NORMAL
+                isOnGround = (thePlayer.motionY==0.0)
+                ridingRuntimeEntityId = 0
+                entityType = 0
+                tick = packet.tick
+            })
         }
-
+        if(packet !is MovePlayerPacket) thePlayer.handleClientPacket(packet, this)
         return true
     }
 

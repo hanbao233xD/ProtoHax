@@ -1,4 +1,4 @@
-package dev.sora.relay.cheat.module.impl
+package dev.sora.relay.cheat.module.impl.movement
 
 import com.nukkitx.math.vector.Vector3f
 import com.nukkitx.protocol.bedrock.packet.SetEntityMotionPacket
@@ -21,7 +21,7 @@ class ModuleSpeed : CheatModule("Speed")  {
                 }
             }
             "hop"->{
-                strafe(0.4849f)
+                strafe(0.29f)
             }
         }
     }
@@ -45,7 +45,7 @@ class ModuleSpeed : CheatModule("Speed")  {
             }
         }else {
             val yaw = direction
-            var motionY = if (mc.thePlayer.motionY == 0.0) 0.42 else 0.0
+            var motionY = if (mc.thePlayer.motionY <= 0.05) 0.32 else 0.0
             if (mc.thePlayer.motionY <= 0.1 && mc.thePlayer.motionY > 0) motionY = -0.08
             if (motionY != 0.0) {
                 session.netSession.inboundPacket(SetEntityMotionPacket().apply {
