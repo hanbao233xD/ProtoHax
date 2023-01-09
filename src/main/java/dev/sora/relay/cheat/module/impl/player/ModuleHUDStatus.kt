@@ -5,8 +5,10 @@ import dev.sora.relay.cheat.module.CheatModule
 import dev.sora.relay.game.event.Listen
 import dev.sora.relay.game.event.impl.EventPacketInbound
 import dev.sora.relay.game.event.impl.EventPacketOutbound
+import dev.sora.relay.game.utils.TimerUtil
 
 class ModuleHUDStatus : CheatModule("HUDStatus") {
+    private val timerUtil=TimerUtil()
     @Listen
     fun onPacketInbound(event: EventPacketInbound) {
         val packet = event.packet
@@ -14,24 +16,30 @@ class ModuleHUDStatus : CheatModule("HUDStatus") {
         if (packet is MobEquipmentPacket) {
             session.thePlayer.currentItem = packet.item
         }
+        if(packet is SetTitlePacket){
+            if(!packet.text.contains("ProtoHax")){
+                timerUtil.reset()
+            }
+        }
     }
 
     @Listen
     fun onPacketOutbound(event: EventPacketOutbound) {
         val packet = event.packet
         if (packet is PlayerAuthInputPacket) {
-            //chat(event.packet.toString())
+            if(packet.tick%2!=0L) return
+            if(!timerUtil.delay(1500f)) return
             val titlePacket = SetTitlePacket()
             titlePacket.type = SetTitlePacket.Type.ACTIONBAR
             titlePacket.fadeInTime = 0
             titlePacket.fadeOutTime = 0
-            titlePacket.stayTime = 1
+            titlePacket.stayTime = 2
             val xDist: Double = mc.thePlayer.posX - mc.thePlayer.prevPosX
             val zDist: Double = mc.thePlayer.posZ - mc.thePlayer.prevPosZ
             val moveSpeed = Math.sqrt(xDist * xDist + zDist * zDist) * 2
             val scaffold = session.moduleManager.getModuleByName("Scaffold") as ModuleScaffold?
             if(scaffold!=null && mc.thePlayer.currentItem!=null) {
-                titlePacket.text = "§eSpeed: §f${
+                titlePacket.text = "§bProtoHax §f| §eSpeed: §f${
                     String.format(
                         "%.2f",
                         moveSpeed * 10

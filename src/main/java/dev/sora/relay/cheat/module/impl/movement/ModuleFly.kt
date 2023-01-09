@@ -23,8 +23,8 @@ import kotlin.math.sin
 class ModuleFly : CheatModule("Fly") {
 
     private val modeValue = ListValue("Mode", arrayOf("Motion","Vanilla", "Mineplex"), "Vanilla")
-    private val motionYValue = FloatValue("MotionY" ,0.4849f,0f,10f)
-    private val motionXZValue = FloatValue("MotionXZ" ,0.4849f,0f,10f)
+    private val motionYValue = FloatValue("MotionY" ,0.4849f,0f,2f)
+    private val motionXZValue = FloatValue("MotionXZ" ,0.4849f,0f,2f)
 
     private var launchY = 0.0
     private var canFly = false

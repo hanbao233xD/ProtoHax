@@ -4,6 +4,7 @@ import com.nukkitx.math.vector.Vector3f
 import com.nukkitx.protocol.bedrock.packet.*
 import dev.sora.relay.cheat.module.CheatModule
 import dev.sora.relay.cheat.module.impl.combat.ModuleAntiBot.isBot
+import dev.sora.relay.cheat.module.impl.player.ModuleTeams.isTeams
 import dev.sora.relay.cheat.value.FloatValue
 import dev.sora.relay.cheat.value.IntValue
 import dev.sora.relay.cheat.value.ListValue
@@ -36,11 +37,9 @@ class ModuleKillAura : CheatModule("KillAura") {
     fun onTick(event: EventTick) {
         if (cpsValue.get() < 20 && !clickTimer.canClick())
             return
-
         val session = event.session
-
         val range = rangeValue.get().pow(2)
-        entityList = session.theWorld.entityMap.values.filter { it is EntityPlayer && it.distanceSq(session.thePlayer) < range && !it.isBot(session) }
+        entityList = session.theWorld.entityMap.values.filter { it is EntityPlayer && it.distanceSq(session.thePlayer) < range && !it.isBot(session) && !it.isTeams(session)}
         if (entityList.isEmpty()) return
         val swingMode = when(swingValue.get()) {
             "Both" -> EntityPlayerSP.SwingMode.BOTH

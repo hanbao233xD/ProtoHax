@@ -19,7 +19,7 @@ class ModulePacketLogger : CheatModule("PacketLogger") {
             if (packet is UpdateBlockPacket) {
                 return
             }
-            chat(event.packet.toString())
+            //chat(event.packet.toString())
         }
     }
 

@@ -34,6 +34,7 @@ class EntityPlayerSP : EntityPlayer(0L, UUID.randomUUID(), "") {
 
     fun handleClientPacket(packet: BedrockPacket, session: GameSession) {
         if (packet is MovePlayerPacket) {
+            onGround = packet.isOnGround
             move(packet.position)
             rotate(packet.rotation)
             if (packet.runtimeEntityId != entityId) {
@@ -43,10 +44,10 @@ class EntityPlayerSP : EntityPlayer(0L, UUID.randomUUID(), "") {
             session.onTick()
             tickExists++
         } else if (packet is PlayerAuthInputPacket) {
-            inputData= packet.inputData as EnumSet<PlayerAuthInputData>?
+            onGround=(motionY==0.0)
+            inputData = packet.inputData as EnumSet<PlayerAuthInputData>?
             moveStrafing = packet.motion.x
             moveForward = packet.motion.y
-            onGround=packet.motion.y==0f
             move(packet.position)
             rotate(packet.rotation)
             session.onTick()

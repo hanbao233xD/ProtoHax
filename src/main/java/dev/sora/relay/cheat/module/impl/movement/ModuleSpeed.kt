@@ -3,6 +3,7 @@ package dev.sora.relay.cheat.module.impl.movement
 import com.nukkitx.math.vector.Vector3f
 import com.nukkitx.protocol.bedrock.packet.SetEntityMotionPacket
 import dev.sora.relay.cheat.module.CheatModule
+import dev.sora.relay.cheat.value.FloatValue
 import dev.sora.relay.cheat.value.ListValue
 import dev.sora.relay.game.event.Listen
 import dev.sora.relay.game.event.impl.EventTick
@@ -12,16 +13,17 @@ import kotlin.math.sin
 
 class ModuleSpeed : CheatModule("Speed")  {
     private val modeValue = ListValue("Mode", arrayOf("Hop", "Legit"), "Legit")
+    private val speedValue = FloatValue("HopSpeed" ,0.29f,0f,2f)
     @Listen
     fun onTick(event: EventTick) {
         when(modeValue.get().lowercase()){
             "legit"->{
-                if((mc.thePlayer.motionY==0.0) && isMoving(mc)){
+                if(mc.thePlayer.onGround && isMoving(mc)){
                     mc.thePlayer.jump(session)
                 }
             }
             "hop"->{
-                strafe(0.29f)
+                strafe(speedValue.get())
             }
         }
     }
@@ -45,7 +47,7 @@ class ModuleSpeed : CheatModule("Speed")  {
             }
         }else {
             val yaw = direction
-            var motionY = if (mc.thePlayer.motionY <= 0.05) 0.32 else 0.0
+            var motionY = if (mc.thePlayer.onGround) 0.32 else 0.0
             if (mc.thePlayer.motionY <= 0.1 && mc.thePlayer.motionY > 0) motionY = -0.08
             if (motionY != 0.0) {
                 session.netSession.inboundPacket(SetEntityMotionPacket().apply {
