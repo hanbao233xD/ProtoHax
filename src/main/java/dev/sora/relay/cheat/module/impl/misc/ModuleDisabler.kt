@@ -9,13 +9,32 @@ import com.nukkitx.protocol.bedrock.packet.NetworkStackLatencyPacket
 import dev.sora.relay.cheat.module.CheatModule
 import dev.sora.relay.cheat.value.ListValue
 import dev.sora.relay.game.event.Listen
+import dev.sora.relay.game.event.impl.EventPacketInbound
 import dev.sora.relay.game.event.impl.EventPacketOutbound
 import dev.sora.relay.game.event.impl.EventTick
+import dev.sora.relay.game.utils.TimerUtil
 
 class ModuleDisabler : CheatModule("Disabler") {
 
-    private val modeValue = ListValue("Mode", arrayOf("CPSCancel","Lifeboat","Mineplex","CubeCraft"), "Lifeboat")
-
+    private val modeValue = ListValue("Mode", arrayOf("LagDetection","CPSCancel","Lifeboat","Mineplex","CubeCraft"), "LagDetection")
+    var timer=TimerUtil()
+    private var lagPacketCount=0;
+    @Listen
+    fun onPacketInbound(event: EventPacketInbound) {
+        if(modeValue.get() == "LagDetection") {
+            if (event.packet is MovePlayerPacket) {
+                lagPacketCount++
+                timer.reset()
+            }
+            if (timer.delay(1000F)) {
+                if (lagPacketCount >= 2) {
+                    mc.moduleManager.getModuleByName("Speed")!!.state = false
+                    mc.moduleManager.getModuleByName("Fly")!!.state = false
+                }
+                lagPacketCount = 0;
+            }
+        }
+    }
     @Listen
     fun onPacketOutbound(event: EventPacketOutbound) {
         val packet = event.packet

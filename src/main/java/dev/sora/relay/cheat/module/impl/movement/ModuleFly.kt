@@ -22,9 +22,9 @@ import kotlin.math.sin
 
 class ModuleFly : CheatModule("Fly") {
 
-    private val modeValue = ListValue("Mode", arrayOf("Motion","Vanilla", "Mineplex"), "Vanilla")
-    private val motionYValue = FloatValue("MotionY" ,0.4849f,0f,2f)
-    private val motionXZValue = FloatValue("MotionXZ" ,0.4849f,0f,2f)
+    private val modeValue = ListValue("Mode", arrayOf("Motion", "Vanilla", "Mineplex"), "Vanilla")
+    private val motionYValue = FloatValue("MotionY", 0.42f, 0f, 2f)
+    private val motionXZValue = FloatValue("MotionXZ", 0.38f, 0f, 2f)
 
     private var launchY = 0.0
     private var canFly = false
@@ -35,7 +35,20 @@ class ModuleFly : CheatModule("Fly") {
         abilityLayers.add(AbilityLayer().apply {
             layerType = AbilityLayer.Type.BASE
             abilitiesSet.addAll(Ability.values())
-            abilityValues.addAll(arrayOf(Ability.BUILD, Ability.MINE, Ability.DOORS_AND_SWITCHES, Ability.OPEN_CONTAINERS, Ability.ATTACK_PLAYERS, Ability.ATTACK_MOBS, Ability.OPERATOR_COMMANDS, Ability.MAY_FLY, Ability.FLY_SPEED, Ability.WALK_SPEED))
+            abilityValues.addAll(
+                arrayOf(
+                    Ability.BUILD,
+                    Ability.MINE,
+                    Ability.DOORS_AND_SWITCHES,
+                    Ability.OPEN_CONTAINERS,
+                    Ability.ATTACK_PLAYERS,
+                    Ability.ATTACK_MOBS,
+                    Ability.OPERATOR_COMMANDS,
+                    Ability.MAY_FLY,
+                    Ability.FLY_SPEED,
+                    Ability.WALK_SPEED
+                )
+            )
             walkSpeed = 0.1f
             flySpeed = 0.15f
         })
@@ -57,8 +70,14 @@ class ModuleFly : CheatModule("Fly") {
                 val player = event.session.thePlayer
                 val yaw = Math.toRadians(player.rotationYaw.toDouble())
                 val value = 2.2f
-                player.teleport(player.posX - sin(yaw) * value, launchY, player.posZ + cos(yaw) * value, event.session.netSession)
+                player.teleport(
+                    player.posX - sin(yaw) * value,
+                    launchY,
+                    player.posZ + cos(yaw) * value,
+                    event.session.netSession
+                )
             }
+
             modeValue.get() == "Vanilla" && !canFly -> {
                 canFly = true
                 event.session.netSession.inboundPacket(abilityPacket.apply {
@@ -116,9 +135,22 @@ class ModuleFly : CheatModule("Fly") {
                     }
                 }
             }
+
             modeValue.get() == "Motion" -> {
-                if(event.packet is PlayerAuthInputPacket && isMoving(mc)) strafe(motionXZValue.get(),if(mc.thePlayer.inputData.contains(PlayerAuthInputData.JUMPING)) motionYValue.get() else if(mc.thePlayer.inputData.contains(PlayerAuthInputData.SNEAKING)) -motionYValue.get() else 0.01f)
+                if (event.packet is PlayerAuthInputPacket && isMoving(mc)) strafe(
+                    motionXZValue.get(),
+                    if (mc.thePlayer.inputData.contains(PlayerAuthInputData.JUMPING)) motionYValue.get() else if (mc.thePlayer.inputData.contains(
+                            PlayerAuthInputData.SNEAKING
+                        )
+                    ) -motionYValue.get() else 0.01f
+                )else if(event.packet is PlayerAuthInputPacket){
+                    session.netSession.inboundPacket(SetEntityMotionPacket().apply {
+                        runtimeEntityId = mc.thePlayer.entityId
+                        motion = Vector3f.from(0.0, 0.0, 0.0)
+                    })
+                }
             }
+
             else -> {
                 if (event.packet is RequestAbilityPacket && event.packet.ability == Ability.FLYING) {
                     event.cancel()
@@ -126,6 +158,7 @@ class ModuleFly : CheatModule("Fly") {
             }
         }
     }
+
     private val direction: Double
         get() {
             var rotationYaw = mc.thePlayer.rotationYaw
@@ -136,7 +169,8 @@ class ModuleFly : CheatModule("Fly") {
             if (mc.thePlayer.moveStrafing < 0f) rotationYaw += 90f * forward
             return Math.toRadians(rotationYaw.toDouble())
         }
-    private fun strafe(speed: Float,motionY:Float) {
+
+    private fun strafe(speed: Float, motionY: Float) {
         val yaw = direction
         session.netSession.inboundPacket(SetEntityMotionPacket().apply {
             runtimeEntityId = mc.thePlayer.entityId

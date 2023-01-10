@@ -26,8 +26,7 @@ fun main(args: Array<String>) {
     val gameSession = craftSession()
 
     val relay = RakNetRelay(InetSocketAddress("127.0.0.1", 19132))
-    var dst = InetSocketAddress("mco.mineplex.com", 19132)
-    dst = InetSocketAddress("127.0.0.1", 19136)
+    var dst = InetSocketAddress("127.0.0.1", 19136)
 //    val msSession = RakNetRelaySessionListenerMicrosoft(getMSAccessToken()).also {
 //        thread {
 //            it.forceFetchChain()

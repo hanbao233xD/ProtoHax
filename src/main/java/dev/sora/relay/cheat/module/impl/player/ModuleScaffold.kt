@@ -37,7 +37,6 @@ class ModuleScaffold : CheatModule("Scaffold") {
     fun onPacketOutbound(event: EventPacketOutbound) {
         val packet = event.packet
         if (packet is PlayerAuthInputPacket) {
-            if(packet.tick%2!=0L) return
             if(!isMoving(mc)) return
             if (session.thePlayer.currentItem == null) return
             session.sendPacket(PlayerActionPacket().apply {

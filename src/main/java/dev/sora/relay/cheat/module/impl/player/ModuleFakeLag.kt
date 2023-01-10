@@ -1,0 +1,31 @@
+package dev.sora.relay.cheat.module.impl.player
+
+import com.nukkitx.protocol.bedrock.BedrockPacket
+import dev.sora.relay.cheat.module.CheatModule
+import dev.sora.relay.cheat.value.FloatValue
+import dev.sora.relay.game.event.Listen
+import dev.sora.relay.game.event.impl.EventPacketOutbound
+import dev.sora.relay.game.utils.TimerUtil
+import java.util.concurrent.LinkedBlockingQueue
+
+class ModuleFakeLag :CheatModule("FakeLag") {
+    private val packetList = LinkedBlockingQueue<BedrockPacket>()
+    private val speedValue = FloatValue("timer" ,500F,0f,3000f)
+    private val timer=TimerUtil()
+    @Listen
+    fun onPacketOutbound(event: EventPacketOutbound) {
+        packetList.add(event.packet)
+        if(timer.delay(speedValue.get())){
+            for (bedrockPacket in packetList) {
+                session.netSession.outboundPacket(bedrockPacket)
+            }
+            timer.reset()
+        }
+    }
+
+    override fun onDisable() {
+        for (bedrockPacket in packetList) {
+            session.netSession.outboundPacket(bedrockPacket)
+        }
+    }
+}

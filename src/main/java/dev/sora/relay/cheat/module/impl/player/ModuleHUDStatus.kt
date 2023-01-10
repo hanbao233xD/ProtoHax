@@ -6,6 +6,7 @@ import dev.sora.relay.game.event.Listen
 import dev.sora.relay.game.event.impl.EventPacketInbound
 import dev.sora.relay.game.event.impl.EventPacketOutbound
 import dev.sora.relay.game.utils.TimerUtil
+import kotlin.math.sqrt
 
 class ModuleHUDStatus : CheatModule("HUDStatus") {
     private val timerUtil=TimerUtil()
@@ -36,7 +37,7 @@ class ModuleHUDStatus : CheatModule("HUDStatus") {
             titlePacket.stayTime = 2
             val xDist: Double = mc.thePlayer.posX - mc.thePlayer.prevPosX
             val zDist: Double = mc.thePlayer.posZ - mc.thePlayer.prevPosZ
-            val moveSpeed = Math.sqrt(xDist * xDist + zDist * zDist) * 2
+            val moveSpeed = sqrt(xDist * xDist + zDist * zDist) * 2
             val scaffold = session.moduleManager.getModuleByName("Scaffold") as ModuleScaffold?
             if(scaffold!=null && mc.thePlayer.currentItem!=null) {
                 titlePacket.text = "§bProtoHax §f| §eSpeed: §f${

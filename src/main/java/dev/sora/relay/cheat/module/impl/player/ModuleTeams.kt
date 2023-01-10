@@ -15,11 +15,10 @@ import dev.sora.relay.game.event.impl.EventTick
 object ModuleTeams : CheatModule("Teams") {
 
     private val modeValue = ListValue("Mode", arrayOf("Round","Name","Arrow"), "Round")
-    private val rangeValue = FloatValue("Range", 15f, 2f, 30f)
+    private val rangeValue = FloatValue("Range", 150f, 20f, 300f)
     lateinit var list:List<Entity>
     fun EntityPlayer.isTeams(session: GameSession): Boolean {
-        if (this is EntityPlayerSP || !state) return false
-        if (modeValue.get() == "Range") {
+        if (modeValue.get() == "Round") {
             return list.filterIsInstance<EntityPlayer>().any { it.username.equals(this.username, true) }
         }
         return false
