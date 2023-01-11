@@ -143,12 +143,7 @@ class ModuleFly : CheatModule("Fly") {
                             PlayerAuthInputData.SNEAKING
                         )
                     ) -motionYValue.get() else 0.01f
-                )else if(event.packet is PlayerAuthInputPacket){
-                    session.netSession.inboundPacket(SetEntityMotionPacket().apply {
-                        runtimeEntityId = mc.thePlayer.entityId
-                        motion = Vector3f.from(0.0, 0.0, 0.0)
-                    })
-                }
+                )
             }
 
             else -> {

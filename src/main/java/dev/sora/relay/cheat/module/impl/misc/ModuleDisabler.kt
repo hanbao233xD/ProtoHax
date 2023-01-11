@@ -8,6 +8,7 @@ import com.nukkitx.protocol.bedrock.packet.PlayerAuthInputPacket
 import com.nukkitx.protocol.bedrock.packet.NetworkStackLatencyPacket
 import dev.sora.relay.cheat.module.CheatModule
 import dev.sora.relay.cheat.value.ListValue
+import dev.sora.relay.game.entity.EntityPlayerSP
 import dev.sora.relay.game.event.Listen
 import dev.sora.relay.game.event.impl.EventPacketInbound
 import dev.sora.relay.game.event.impl.EventPacketOutbound
@@ -16,7 +17,7 @@ import dev.sora.relay.game.utils.TimerUtil
 
 class ModuleDisabler : CheatModule("Disabler") {
 
-    private val modeValue = ListValue("Mode", arrayOf("LagDetection","CPSCancel","Lifeboat","Mineplex","CubeCraft"), "LagDetection")
+    private val modeValue = ListValue("Mode", arrayOf("LagDetection","HYT","CPSCancel","Lifeboat","Mineplex","CubeCraft"), "LagDetection")
     var timer=TimerUtil()
     private var lagPacketCount=0;
     @Listen
@@ -45,6 +46,11 @@ class ModuleDisabler : CheatModule("Disabler") {
                     event.cancel()
             }
         }
+        if(modeValue.get() == "HYT"){
+            if (packet is PlayerAuthInputPacket){
+                if(packet.tick%5==0L) session.thePlayer.attackEntity(mc.thePlayer, event.session, EntityPlayerSP.SwingMode.NONE)
+            }
+        }
         else if(modeValue.get() == "Lifeboat"){
             if (packet is MovePlayerPacket) {
                 packet.isOnGround = true
@@ -63,7 +69,6 @@ class ModuleDisabler : CheatModule("Disabler") {
                 }
             }else if (packet is PlayerAuthInputPacket) {
                 packet.motion = Vector2f.from(0.01f,0.01f)
-
                 for(i in 0 until 9){
                     event.session.netSession.outboundPacket(packet)
                 }

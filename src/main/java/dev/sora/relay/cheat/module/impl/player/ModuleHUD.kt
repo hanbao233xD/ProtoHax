@@ -8,7 +8,7 @@ import dev.sora.relay.game.event.impl.EventPacketOutbound
 import dev.sora.relay.game.utils.TimerUtil
 import kotlin.math.sqrt
 
-class ModuleHUDStatus : CheatModule("HUDStatus") {
+class ModuleHUD : CheatModule("HUD") {
     private val timerUtil=TimerUtil()
     @Listen
     fun onPacketInbound(event: EventPacketInbound) {

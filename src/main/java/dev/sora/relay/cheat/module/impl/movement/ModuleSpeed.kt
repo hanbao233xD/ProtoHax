@@ -1,16 +1,19 @@
 package dev.sora.relay.cheat.module.impl.movement
 
 import com.nukkitx.math.vector.Vector3f
+import com.nukkitx.protocol.bedrock.data.Ability
 import com.nukkitx.protocol.bedrock.data.PlayerAuthInputData
-import com.nukkitx.protocol.bedrock.packet.PlayerAuthInputPacket
-import com.nukkitx.protocol.bedrock.packet.SetEntityMotionPacket
+import com.nukkitx.protocol.bedrock.data.entity.EntityEventType
+import com.nukkitx.protocol.bedrock.packet.*
 import dev.sora.relay.cheat.module.CheatModule
 import dev.sora.relay.cheat.value.FloatValue
 import dev.sora.relay.cheat.value.ListValue
 import dev.sora.relay.game.event.Listen
+import dev.sora.relay.game.event.impl.EventPacketOutbound
 import dev.sora.relay.game.event.impl.EventTick
 import dev.sora.relay.game.utils.movement.MovementUtils.isMoving
 import kotlin.math.cos
+import kotlin.math.floor
 import kotlin.math.sin
 
 class ModuleSpeed : CheatModule("Speed")  {
@@ -27,13 +30,30 @@ class ModuleSpeed : CheatModule("Speed")  {
             "hop"->{
                 strafe(speedValue.get())
             }
-            "LowHop"->{
-                if(isMoving(mc) && mc.thePlayer.onGround) strafe(0.38f,if(mc.thePlayer.inputData.contains(
-                        PlayerAuthInputData.JUMPING)) 0.38f else if(mc.thePlayer.inputData.contains(
-                        PlayerAuthInputData.SNEAKING)) -0.38f else 0.02f)
+        }
+    }
+
+    @Listen
+    fun onPacketOutbound(event: EventPacketOutbound) {
+        when {
+            modeValue.get() == "LowHop" -> {
+                if (event.packet is PlayerAuthInputPacket && isMoving(mc)) strafe(
+                    0.38f,
+                    if (mc.thePlayer.inputData.contains(PlayerAuthInputData.JUMPING)) 0.38f else if (mc.thePlayer.inputData.contains(
+                            PlayerAuthInputData.SNEAKING
+                        )
+                    ) -0.38f else if(mc.thePlayer.onGround) 0.08f else -0.1f
+                )
+            }
+
+            else -> {
+                if (event.packet is RequestAbilityPacket && event.packet.ability == Ability.FLYING) {
+                    event.cancel()
+                }
             }
         }
     }
+
     private val direction: Double
         get() {
             var rotationYaw = mc.thePlayer.rotationYaw

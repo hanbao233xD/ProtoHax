@@ -13,7 +13,7 @@ import kotlin.random.Random
 class ModuleSpammer : CheatModule("Spammer") {
 
     private val delayValue = IntValue("Delay", 5000, 500, 10000)
-    private val messageValue = StringValue("Message", "[!] I'm using ProtoHax t<dot>me/protohax")
+    private val messageValue = StringValue("Messages", "@ [!] I'm using ProtoHax | Get it→796593053")
 
     private val spamTimer = TheTimer()
 

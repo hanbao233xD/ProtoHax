@@ -44,7 +44,7 @@ class EntityPlayerSP : EntityPlayer(0L, UUID.randomUUID(), "") {
             session.onTick()
             tickExists++
         } else if (packet is PlayerAuthInputPacket) {
-            onGround=(motionY==0.0)
+            onGround=(this.motionY==0.0)
             inputData = packet.inputData as EnumSet<PlayerAuthInputData>?
             moveStrafing = packet.motion.x
             moveForward = packet.motion.y

@@ -2,6 +2,8 @@ package dev.sora.relay.game.entity
 
 import com.nukkitx.math.vector.Vector3f
 import com.nukkitx.protocol.bedrock.BedrockPacket
+import com.nukkitx.protocol.bedrock.packet.AddEntityPacket
+import com.nukkitx.protocol.bedrock.packet.AddPlayerPacket
 import com.nukkitx.protocol.bedrock.packet.MoveEntityAbsolutePacket
 import kotlin.math.sqrt
 
@@ -22,6 +24,9 @@ abstract class Entity(open val entityId: Long) {
     open var motionX = 0.0
     open var motionY = 0.0
     open var motionZ = 0.0
+    var uniqueEntityId = 0L
+
+    var entityType = 0
 
     var tickExists = 0L
 
@@ -83,6 +88,12 @@ abstract class Entity(open val entityId: Long) {
             move(packet.position)
             rotate(packet.rotation)
             tickExists++
+        } else if(packet is AddEntityPacket && packet.runtimeEntityId == entityId){
+            uniqueEntityId = packet.uniqueEntityId
+            entityType = packet.entityType
+        } else if(packet is AddPlayerPacket && packet.runtimeEntityId == entityId){
+            uniqueEntityId = packet.uniqueEntityId
+            entityType = 63
         } /* else if (packet is MoveEntityDeltaPacket && packet.runtimeEntityId == entityId) {
             // TODO
         } */
