@@ -10,14 +10,14 @@ import dev.sora.relay.cheat.module.CheatModule
 import dev.sora.relay.cheat.value.ListValue
 import dev.sora.relay.game.entity.EntityPlayerSP
 import dev.sora.relay.game.event.Listen
-import dev.sora.relay.game.event.impl.EventPacketInbound
-import dev.sora.relay.game.event.impl.EventPacketOutbound
-import dev.sora.relay.game.event.impl.EventTick
+import dev.sora.relay.game.event.EventPacketInbound
+import dev.sora.relay.game.event.EventPacketOutbound
+import dev.sora.relay.game.event.EventTick
 import dev.sora.relay.game.utils.TimerUtil
 
 class ModuleDisabler : CheatModule("Disabler") {
 
-    private val modeValue = ListValue("Mode", arrayOf("LagDetection","HYT","CPSCancel","Lifeboat","Mineplex","CubeCraft"), "LagDetection")
+    private val modeValue = ListValue("Mode", arrayOf("LagDetection","HYT","CPSCancel","Lifeboat","Mineplex","CubeCraft"), "HYT")
     var timer=TimerUtil()
     private var lagPacketCount=0;
     @Listen

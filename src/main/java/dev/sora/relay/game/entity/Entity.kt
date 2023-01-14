@@ -5,6 +5,8 @@ import com.nukkitx.protocol.bedrock.BedrockPacket
 import com.nukkitx.protocol.bedrock.packet.AddEntityPacket
 import com.nukkitx.protocol.bedrock.packet.AddPlayerPacket
 import com.nukkitx.protocol.bedrock.packet.MoveEntityAbsolutePacket
+import dev.sora.relay.game.event.Listen
+import dev.sora.relay.game.event.EventPacketInbound
 import kotlin.math.sqrt
 
 abstract class Entity(open val entityId: Long) {
@@ -12,7 +14,7 @@ abstract class Entity(open val entityId: Long) {
     open var posX = 0.0
     open var posY = 0.0
     open var posZ = 0.0
-
+    var identifier = ""
     open var prevPosX = 0.0
     open var prevPosY = 0.0
     open var prevPosZ = 0.0
@@ -91,6 +93,7 @@ abstract class Entity(open val entityId: Long) {
         } else if(packet is AddEntityPacket && packet.runtimeEntityId == entityId){
             uniqueEntityId = packet.uniqueEntityId
             entityType = packet.entityType
+            identifier = packet.identifier
         } else if(packet is AddPlayerPacket && packet.runtimeEntityId == entityId){
             uniqueEntityId = packet.uniqueEntityId
             entityType = 63
@@ -98,7 +101,15 @@ abstract class Entity(open val entityId: Long) {
             // TODO
         } */
     }
-
+    @Listen
+    fun onPacketInbound(event: EventPacketInbound) {
+        val packet = event.packet
+        if (packet is MoveEntityAbsolutePacket && packet.runtimeEntityId == entityId) {
+            move(packet.position)
+            rotate(packet.rotation)
+            tickExists++
+        }
+    }
     open fun reset() {
 //        attributeList.clear()
 //        metadataList.clear()

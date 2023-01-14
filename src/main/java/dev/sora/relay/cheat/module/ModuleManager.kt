@@ -2,8 +2,7 @@ package dev.sora.relay.cheat.module
 
 import dev.sora.relay.cheat.module.impl.combat.*
 import dev.sora.relay.cheat.module.impl.misc.*
-import dev.sora.relay.cheat.module.impl.movement.ModuleFly
-import dev.sora.relay.cheat.module.impl.movement.ModuleSpeed
+import dev.sora.relay.cheat.module.impl.movement.*
 import dev.sora.relay.cheat.module.impl.player.*
 import dev.sora.relay.game.GameSession
 
@@ -25,10 +24,13 @@ class ModuleManager(private val session: GameSession) {
 
     fun init() {
         registerModule(ModuleFly())
+        registerModule(ModuleTP())
         registerModule(ModuleVelocity())
         registerModule(ModuleKillAura())
         registerModule(ModuleSpammer())
         registerModule(ModuleBGM())
+        registerModule(ModuleNoResetRotation())
+        registerModule(ModuleTPFly())
         registerModule(ModuleDisabler())
         registerModule(ModuleOpFightBot())
         registerModule(ModuleNoSkin())
@@ -41,14 +43,19 @@ class ModuleManager(private val session: GameSession) {
         registerModule(ModuleAntiKick())
         registerModule(ModuleAntiCrasher())
         registerModule(ModuleAntiVoid())
-        registerModule(ModuleCrasher())
-        registerModule(ModuleScaffold())
+        //registerModule(ModuleCrasher())
+        registerModule(ModuleInfiniteAura())
+        registerModule(ModuleHighJump())
+        registerModule(ModuleAirJump())
+        registerModule(ModuleFreeCam())
+        //registerModule(ModuleScaffold())
         registerModule(ModuleHUD())
         registerModule(ModuleTeams)
         registerModule(ModuleSpeed())
         registerModule(ModuleBlink())
         registerModule(ModuleFakeLag())
         registerModule(ModuleAntiBlind())
+        registerModule(ModuleCriticals())
         registerModule(ModuleFastBreak())
         registerModule(ModuleTargetStrafe())
         for (module in modules) {

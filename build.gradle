@@ -32,7 +32,7 @@ dependencies {
     embed 'io.netty:netty-transport:4.1.86.Final'
     embed 'com.google.code.findbugs:jsr305:3.0.2'
     embed 'coelho.msftauth:minecraft-msftauth:2.1.1'
-
+    implementation 'org.java-websocket:Java-WebSocket:1.5.2'
     compileOnly 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
 }

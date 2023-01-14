@@ -6,10 +6,10 @@ import dev.sora.relay.game.entity.EntityPlayerSP
 class ModuleRemoteStore : CheatModule("RemoteStore") {
     override fun onEnable() {
         val entityList = session.theWorld.entityMap.values.filter {
-            it.entityType == 15
+            it.identifier == "minecraft:villager" //minecraft:villager
         }
 
-        if (entityList.isNotEmpty()){
+        if (entityList.isNotEmpty()) {
             (entityList.minByOrNull { it.distanceSq(session.thePlayer) } ?: return).also {
                 session.thePlayer.attackEntity(it, session, EntityPlayerSP.SwingMode.SERVERSIDE)
             }
@@ -17,4 +17,5 @@ class ModuleRemoteStore : CheatModule("RemoteStore") {
 
         toggle()
     }
+
 }

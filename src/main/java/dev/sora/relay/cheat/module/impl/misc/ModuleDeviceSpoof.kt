@@ -8,7 +8,7 @@ import com.nukkitx.protocol.bedrock.packet.PlayerAuthInputPacket
 import dev.sora.relay.cheat.module.CheatModule
 import dev.sora.relay.cheat.value.BoolValue
 import dev.sora.relay.game.event.Listen
-import dev.sora.relay.game.event.impl.EventPacketOutbound
+import dev.sora.relay.game.event.EventPacketOutbound
 import dev.sora.relay.utils.toHexString
 import io.netty.util.AsciiString
 import java.util.Base64

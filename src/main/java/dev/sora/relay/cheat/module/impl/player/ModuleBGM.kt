@@ -4,7 +4,7 @@ import com.nukkitx.protocol.bedrock.data.SoundEvent
 import com.nukkitx.protocol.bedrock.packet.LevelSoundEventPacket
 import dev.sora.relay.cheat.module.CheatModule
 import dev.sora.relay.game.event.Listen
-import dev.sora.relay.game.event.impl.EventTick
+import dev.sora.relay.game.event.EventTick
 import dev.sora.relay.game.utils.NoteBlockUtils
 import java.io.ByteArrayInputStream
 import java.util.*

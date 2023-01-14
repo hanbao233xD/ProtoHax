@@ -25,6 +25,16 @@ abstract class CheatModule(val name: String,
             }
         }
 
+    val direction: Double
+        get() {
+            var rotationYaw = mc.thePlayer.rotationYaw
+            if (mc.thePlayer.moveForward < 0f) rotationYaw += 180f
+            var forward = 1f
+            if (mc.thePlayer.moveForward < 0f) forward = -0.5f else if (mc.thePlayer.moveForward > 0f) forward = 0.5f
+            if (mc.thePlayer.moveStrafing > 0f) rotationYaw -= 90f * forward
+            if (mc.thePlayer.moveStrafing < 0f) rotationYaw += 90f * forward
+            return Math.toRadians(rotationYaw.toDouble())
+        }
     open fun onEnable() {}
 
     open fun onDisable() {}

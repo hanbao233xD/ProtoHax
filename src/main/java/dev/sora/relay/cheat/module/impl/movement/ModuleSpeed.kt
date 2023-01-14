@@ -9,16 +9,18 @@ import dev.sora.relay.cheat.module.CheatModule
 import dev.sora.relay.cheat.value.FloatValue
 import dev.sora.relay.cheat.value.ListValue
 import dev.sora.relay.game.event.Listen
-import dev.sora.relay.game.event.impl.EventPacketOutbound
-import dev.sora.relay.game.event.impl.EventTick
+import dev.sora.relay.game.event.EventPacketOutbound
+import dev.sora.relay.game.event.EventTick
 import dev.sora.relay.game.utils.movement.MovementUtils.isMoving
 import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.sin
 
 class ModuleSpeed : CheatModule("Speed")  {
-    private val modeValue = ListValue("Mode", arrayOf("Hop","LowHop" ,"Legit"), "Legit")
-    private val speedValue = FloatValue("HopSpeed" ,0.29f,0f,2f)
+    private val modeValue = ListValue("Mode", arrayOf("Hop","LowHop" ,"Legit"), "Hop")
+    private val speedValue = FloatValue("HopSpeed" ,0.39f,0f,2f)
+    private val lowHopSpeedValue = FloatValue("LowHopSpeed" ,0.39f,0f,2f)
+    private val hopYValue = FloatValue("HopY" ,0.32f,0f,1f)
     @Listen
     fun onTick(event: EventTick) {
         when(modeValue.get().lowercase()){
@@ -38,11 +40,11 @@ class ModuleSpeed : CheatModule("Speed")  {
         when {
             modeValue.get() == "LowHop" -> {
                 if (event.packet is PlayerAuthInputPacket && isMoving(mc)) strafe(
-                    0.38f,
-                    if (mc.thePlayer.inputData.contains(PlayerAuthInputData.JUMPING)) 0.38f else if (mc.thePlayer.inputData.contains(
+                    lowHopSpeedValue.get(),
+                    if (mc.thePlayer.inputData.contains(PlayerAuthInputData.JUMPING)) lowHopSpeedValue.get() else if (mc.thePlayer.inputData.contains(
                             PlayerAuthInputData.SNEAKING
                         )
-                    ) -0.38f else if(mc.thePlayer.onGround) 0.08f else -0.1f
+                    ) -hopYValue.get() else if(mc.thePlayer.onGround) 0.08f else -0.1f
                 )
             }
 
@@ -54,16 +56,6 @@ class ModuleSpeed : CheatModule("Speed")  {
         }
     }
 
-    private val direction: Double
-        get() {
-            var rotationYaw = mc.thePlayer.rotationYaw
-            if (mc.thePlayer.moveForward < 0f) rotationYaw += 180f
-            var forward = 1f
-            if (mc.thePlayer.moveForward < 0f) forward = -0.5f else if (mc.thePlayer.moveForward > 0f) forward = 0.5f
-            if (mc.thePlayer.moveStrafing > 0f) rotationYaw -= 90f * forward
-            if (mc.thePlayer.moveStrafing < 0f) rotationYaw += 90f * forward
-            return Math.toRadians(rotationYaw.toDouble())
-        }
     private fun strafe(speed: Float,motionY:Float) {
         val yaw = direction
         session.netSession.inboundPacket(SetEntityMotionPacket().apply {
@@ -76,12 +68,12 @@ class ModuleSpeed : CheatModule("Speed")  {
             if(mc.thePlayer.motionY>0) {
                 session.netSession.inboundPacket(SetEntityMotionPacket().apply {
                     runtimeEntityId = mc.thePlayer.entityId
-                    motion = Vector3f.from(0.0, -0.02, 0.0)
+                    motion = Vector3f.from(0.0, -0.08, 0.0)
                 })
             }
         }else {
             val yaw = direction
-            var motionY = if (mc.thePlayer.motionY==0.0) 0.32 else 0.0
+            var motionY = if (mc.thePlayer.motionY==0.0) hopYValue.get().toDouble() else 0.0
             if (mc.thePlayer.motionY <= 0.1 && mc.thePlayer.motionY > 0) motionY = -0.08
             if (motionY != 0.0) {
                 session.netSession.inboundPacket(SetEntityMotionPacket().apply {

@@ -4,7 +4,7 @@ import com.nukkitx.protocol.bedrock.packet.ResourcePackStackPacket
 import com.nukkitx.protocol.bedrock.packet.ResourcePacksInfoPacket
 import dev.sora.relay.cheat.module.CheatModule
 import dev.sora.relay.game.event.Listen
-import dev.sora.relay.game.event.impl.EventPacketInbound
+import dev.sora.relay.game.event.EventPacketInbound
 
 class ModuleResourcePackSpoof : CheatModule("ResourcePackSpoof") {
 

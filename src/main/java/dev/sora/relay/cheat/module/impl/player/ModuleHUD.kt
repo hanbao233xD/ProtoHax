@@ -3,8 +3,8 @@ package dev.sora.relay.cheat.module.impl.player
 import com.nukkitx.protocol.bedrock.packet.*
 import dev.sora.relay.cheat.module.CheatModule
 import dev.sora.relay.game.event.Listen
-import dev.sora.relay.game.event.impl.EventPacketInbound
-import dev.sora.relay.game.event.impl.EventPacketOutbound
+import dev.sora.relay.game.event.EventPacketInbound
+import dev.sora.relay.game.event.EventPacketOutbound
 import dev.sora.relay.game.utils.TimerUtil
 import kotlin.math.sqrt
 

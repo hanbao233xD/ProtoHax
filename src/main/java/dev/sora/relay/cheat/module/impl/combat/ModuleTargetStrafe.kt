@@ -5,7 +5,7 @@ import com.nukkitx.protocol.bedrock.packet.SetEntityMotionPacket
 import dev.sora.relay.cheat.module.CheatModule
 import dev.sora.relay.cheat.value.FloatValue
 import dev.sora.relay.game.event.Listen
-import dev.sora.relay.game.event.impl.EventTick
+import dev.sora.relay.game.event.EventTick
 import dev.sora.relay.game.utils.math.MathUtils.rand
 import dev.sora.relay.game.utils.movement.MovementUtils
 import kotlin.math.cos

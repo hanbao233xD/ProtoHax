@@ -4,6 +4,7 @@ import com.google.gson.JsonParser
 import com.nukkitx.protocol.bedrock.BedrockPacket
 import com.nukkitx.protocol.bedrock.data.AuthoritativeMovementMode
 import com.nukkitx.protocol.bedrock.data.PlayerActionType
+import com.nukkitx.protocol.bedrock.data.ScoreInfo
 import com.nukkitx.protocol.bedrock.data.SyncedPlayerMovementSettings
 import com.nukkitx.protocol.bedrock.packet.*
 import dev.sora.relay.RakNetRelaySession
@@ -11,10 +12,11 @@ import dev.sora.relay.RakNetRelaySessionListener
 import dev.sora.relay.cheat.module.ModuleManager
 import dev.sora.relay.game.entity.EntityPlayerSP
 import dev.sora.relay.game.event.EventManager
-import dev.sora.relay.game.event.impl.EventPacketInbound
-import dev.sora.relay.game.event.impl.EventPacketOutbound
-import dev.sora.relay.game.event.impl.EventTick
+import dev.sora.relay.game.event.EventPacketInbound
+import dev.sora.relay.game.event.EventPacketOutbound
+import dev.sora.relay.game.event.EventTick
 import dev.sora.relay.game.utils.TimerUtil
+import dev.sora.relay.game.utils.movement.MovementUtils
 import dev.sora.relay.game.world.WorldClient
 import dev.sora.relay.utils.base64Decode
 import java.util.*
@@ -63,7 +65,7 @@ class GameSession : RakNetRelaySessionListener.PacketListener {
             theWorld.entityMap.clear()
         }
         if (hookedTimer.delay(15000f) && !hooked) {
-            netSession.inboundPacket(TextPacket().apply {
+            if(MovementUtils.isMoving(this)) netSession.inboundPacket(TextPacket().apply {
                 type = TextPacket.Type.RAW
                 isNeedsTranslation = false
                 message = "[§9§lProtoHax§r] Hooked StartGamePacket, Welcome!"
@@ -74,7 +76,6 @@ class GameSession : RakNetRelaySessionListener.PacketListener {
         }
         thePlayer.onPacket(packet)
         theWorld.onPacket(packet)
-
         return true
     }
 
@@ -98,46 +99,18 @@ class GameSession : RakNetRelaySessionListener.PacketListener {
                 }
             }
         } else if (packet is PlayerAuthInputPacket) {
-            netSession.outboundPacket(MovePlayerPacket().apply {
-                runtimeEntityId = thePlayer.entityId
-                position = packet.position
-                rotation = packet.rotation
-                mode = MovePlayerPacket.Mode.NORMAL
-                isOnGround = (thePlayer.motionY==0.0)
-                ridingRuntimeEntityId = 0
-                entityType = 0
-                tick = packet.tick
-            })
-            /*val authPacket=packet
-            if (authPacket.playerActions.isNotEmpty()) {
-                for (action in authPacket.playerActions) {
-                    val blockPos: BlockVector3 = action.blockPosition
-                    val blockFace: BlockFace = BlockFace.fromIndex(action.getFacing())
-                    if (this.lastBlockAction != null && this.lastBlockAction.getAction() === PlayerActionType.PREDICT_DESTROY_BLOCK && action.action == PlayerActionType.CONTINUE_DESTROY_BLOCK) {
-                        this.onBlockBreakStart(blockPos.asVector3(), blockFace)
-                    }
-                    val lastBreakPos: BlockVector3? =
-                        if (this.lastBlockAction == null) null else this.lastBlockAction.getPosition()
-                    if (lastBreakPos != null && (lastBreakPos.getX() !== blockPos.getX() || lastBreakPos.getY() !== blockPos.getY() || lastBreakPos.getZ()) !== blockPos.getZ()) {
-                        this.onBlockBreakAbort(lastBreakPos.asVector3(), BlockFace.DOWN)
-                        this.onBlockBreakStart(blockPos.asVector3(), blockFace)
-                    }
-                    when (action.action) {
-                        START_DESTROY_BLOCK -> this.onBlockBreakStart(blockPos.asVector3(), blockFace)
-                        ABORT_DESTROY_BLOCK, STOP_DESTROY_BLOCK -> this.onBlockBreakAbort(
-                            blockPos.asVector3(),
-                            blockFace
-                        )
-
-                        CONTINUE_DESTROY_BLOCK -> this.onBlockBreakContinue(blockPos.asVector3(), blockFace)
-                        PREDICT_DESTROY_BLOCK -> {
-                            this.onBlockBreakAbort(blockPos.asVector3(), blockFace)
-                            this.onBlockBreakComplete(blockPos, blockFace)
-                        }
-                    }
-                    this.lastBlockAction = action
-                }
-            }*/
+            if(!moduleManager.getModuleByName("FreeCam")!!.state){
+                netSession.outboundPacket(MovePlayerPacket().apply {
+                    runtimeEntityId = thePlayer.entityId
+                    position = packet.position
+                    rotation = packet.rotation
+                    mode = MovePlayerPacket.Mode.NORMAL
+                    isOnGround = (thePlayer.motionY==0.0)
+                    ridingRuntimeEntityId = 0
+                    entityType = 0
+                    tick = packet.tick
+                })
+            }
         }
         if(packet !is MovePlayerPacket) thePlayer.handleClientPacket(packet, this)
         return true

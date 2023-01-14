@@ -12,9 +12,9 @@ import dev.sora.relay.cheat.module.CheatModule
 import dev.sora.relay.cheat.value.FloatValue
 import dev.sora.relay.cheat.value.ListValue
 import dev.sora.relay.game.event.Listen
-import dev.sora.relay.game.event.impl.EventPacketInbound
-import dev.sora.relay.game.event.impl.EventPacketOutbound
-import dev.sora.relay.game.event.impl.EventTick
+import dev.sora.relay.game.event.EventPacketInbound
+import dev.sora.relay.game.event.EventPacketOutbound
+import dev.sora.relay.game.event.EventTick
 import dev.sora.relay.game.utils.movement.MovementUtils.isMoving
 import kotlin.math.cos
 import kotlin.math.floor
@@ -22,8 +22,8 @@ import kotlin.math.sin
 
 class ModuleFly : CheatModule("Fly") {
 
-    private val modeValue = ListValue("Mode", arrayOf("Motion", "Vanilla", "Mineplex"), "Vanilla")
-    private val motionYValue = FloatValue("MotionY", 0.42f, 0f, 2f)
+    private val modeValue = ListValue("FlyMode", arrayOf("Motion", "Vanilla", "Mineplex"), "Motion")
+    private val motionYValue = FloatValue("MotionY", 0.32f, 0f, 2f)
     private val motionXZValue = FloatValue("MotionXZ", 0.38f, 0f, 2f)
 
     private var launchY = 0.0
@@ -154,16 +154,6 @@ class ModuleFly : CheatModule("Fly") {
         }
     }
 
-    private val direction: Double
-        get() {
-            var rotationYaw = mc.thePlayer.rotationYaw
-            if (mc.thePlayer.moveForward < 0f) rotationYaw += 180f
-            var forward = 1f
-            if (mc.thePlayer.moveForward < 0f) forward = -0.5f else if (mc.thePlayer.moveForward > 0f) forward = 0.5f
-            if (mc.thePlayer.moveStrafing > 0f) rotationYaw -= 90f * forward
-            if (mc.thePlayer.moveStrafing < 0f) rotationYaw += 90f * forward
-            return Math.toRadians(rotationYaw.toDouble())
-        }
 
     private fun strafe(speed: Float, motionY: Float) {
         val yaw = direction

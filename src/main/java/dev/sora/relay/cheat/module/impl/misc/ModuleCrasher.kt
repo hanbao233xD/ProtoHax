@@ -3,7 +3,7 @@ package dev.sora.relay.cheat.module.impl.misc
 import com.nukkitx.protocol.bedrock.packet.AnimatePacket
 import dev.sora.relay.cheat.module.CheatModule
 import dev.sora.relay.game.event.Listen
-import dev.sora.relay.game.event.impl.EventTick
+import dev.sora.relay.game.event.EventTick
 
 class ModuleCrasher : CheatModule("Crasher") {
 

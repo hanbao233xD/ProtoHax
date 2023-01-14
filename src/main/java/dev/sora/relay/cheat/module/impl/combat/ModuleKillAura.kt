@@ -12,8 +12,8 @@ import dev.sora.relay.game.entity.Entity
 import dev.sora.relay.game.entity.EntityPlayer
 import dev.sora.relay.game.entity.EntityPlayerSP
 import dev.sora.relay.game.event.Listen
-import dev.sora.relay.game.event.impl.EventPacketOutbound
-import dev.sora.relay.game.event.impl.EventTick
+import dev.sora.relay.game.event.EventPacketOutbound
+import dev.sora.relay.game.event.EventTick
 import dev.sora.relay.utils.timing.ClickTimer
 import java.lang.Math.atan2
 import java.lang.Math.sqrt
@@ -22,9 +22,9 @@ import kotlin.math.pow
 
 class ModuleKillAura : CheatModule("KillAura") {
 
-    private val cpsValue = IntValue("CPS", 7, 1, 20)
-    private val rangeValue = FloatValue("Range", 3.7f, 2f, 7f)
-    private val attackModeValue = ListValue("AttackMode", arrayOf("Single", "Multi"), "Single")
+    private val cpsValue = IntValue("CPS", 20, 1, 20)
+    private val rangeValue = FloatValue("Range", 8f, 2f, 8f)
+    private val attackModeValue = ListValue("AttackMode", arrayOf("Single", "Multi"), "Multi")
     private val rotationModeValue = ListValue("RotationMode", arrayOf("Lock", "None"), "Lock")
     private val swingValue = ListValue("Swing", arrayOf("Both", "Client", "Server", "None"), "Both")
 
@@ -32,7 +32,6 @@ class ModuleKillAura : CheatModule("KillAura") {
 
     private val clickTimer = ClickTimer()
     lateinit var entityList : List<Entity>
-    var attackList : List<Entity> = LinkedList<Entity>()
     @Listen
     fun onTick(event: EventTick) {
         if (cpsValue.get() < 20 && !clickTimer.canClick())
