@@ -51,7 +51,7 @@ class GameSession : RakNetRelaySessionListener.PacketListener {
             packet.playerMovementSettings = SyncedPlayerMovementSettings().apply {
                 movementMode = AuthoritativeMovementMode.SERVER
                 rewindHistorySize = 0
-                isServerAuthoritativeBlockBreaking = true
+                isServerAuthoritativeBlockBreaking = false
             }
             packet.authoritativeMovementMode = AuthoritativeMovementMode.SERVER
             println("Hooked$packet")
