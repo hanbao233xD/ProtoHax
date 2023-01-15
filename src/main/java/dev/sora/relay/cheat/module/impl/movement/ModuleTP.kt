@@ -7,7 +7,7 @@ import dev.sora.relay.cheat.value.FloatValue
 import dev.sora.relay.game.utils.math.MathHelper.cos
 import dev.sora.relay.game.utils.math.MathHelper.sin
 
-class ModuleTP : CheatModule("TPFly") {
+class ModuleTP : CheatModule("Teleport") {
     private val distanceValue = FloatValue("Distance", 20f, 0f, 50f)
     private val tpHighValue = FloatValue("YHigh", 20f, 0f, 50f)
     override fun onEnable() {

@@ -5,6 +5,7 @@ import com.nukkitx.protocol.bedrock.packet.MovePlayerPacket
 import com.nukkitx.protocol.bedrock.packet.PlayerAuthInputPacket
 import com.nukkitx.protocol.bedrock.packet.SetEntityMotionPacket
 import dev.sora.relay.cheat.module.CheatModule
+import dev.sora.relay.cheat.value.FloatValue
 import dev.sora.relay.game.event.Listen
 import dev.sora.relay.game.event.EventPacketOutbound
 import dev.sora.relay.game.utils.TimerUtil
@@ -12,6 +13,7 @@ import dev.sora.relay.game.utils.TimerUtil
 class ModuleAntiVoid : CheatModule("AntiVoid"){
     private var pos:Vector3f?=null
     private val timer= TimerUtil()
+    private val floatValue = FloatValue("FloatTime", 1000f, 100f, 5000f)
     override fun onEnable() {
         pos=null
         super.onEnable()
@@ -24,7 +26,7 @@ class ModuleAntiVoid : CheatModule("AntiVoid"){
                 pos = Vector3f.from(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)
             }
             if(mc.thePlayer.motionY<0){
-                if(timer.delay(500F)){
+                if(timer.delay(floatValue.get())){
                     session.netSession.inboundPacket(SetEntityMotionPacket().apply {
                         runtimeEntityId = mc.thePlayer.entityId
                         motion = Vector3f.from(-1.0,0.38, -1.0)
