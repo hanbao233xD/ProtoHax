@@ -14,7 +14,7 @@ import java.util.concurrent.LinkedBlockingQueue
 import kotlin.math.cos
 import kotlin.math.sin
 
-class ModuleBlink  : CheatModule("Blink") {
+class ModuleBlink  : CheatModule("Blink","闪现") {
     private val pulseValue = BoolValue("Pulse", false)
     private val pulseDelayValue = FloatValue("Pulse Delay", 500f, 500f, 5000f)
 

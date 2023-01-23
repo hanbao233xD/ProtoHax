@@ -10,7 +10,7 @@ import dev.sora.relay.game.event.Listen
 import dev.sora.relay.game.event.EventPacketOutbound
 import dev.sora.relay.game.utils.TimerUtil
 
-class ModuleAntiVoid : CheatModule("AntiVoid"){
+class ModuleAntiVoid : CheatModule("AntiVoid","虚空回弹"){
     private var pos:Vector3f?=null
     private val timer= TimerUtil()
     private val floatValue = FloatValue("FloatTime", 1000f, 100f, 5000f)
@@ -19,19 +19,24 @@ class ModuleAntiVoid : CheatModule("AntiVoid"){
         super.onEnable()
     }
 
+    private val onGround = TimerUtil()
     @Listen
     fun onPacketOutbound(event: EventPacketOutbound) {
         if(event.packet is PlayerAuthInputPacket){
-            if(mc.thePlayer.onGround) {
-                pos = Vector3f.from(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)
+            if (mc.thePlayer.motionY != 0.0) {
+                onGround.reset()
+            }
+            if (onGround.delay(500f)) {
+                onGround.reset()
+                pos = Vector3f.from(mc.thePlayer.posX, mc.thePlayer.posY+1.5, mc.thePlayer.posZ)
             }
             if(mc.thePlayer.motionY<0){
                 if(timer.delay(floatValue.get())){
-                    session.netSession.inboundPacket(SetEntityMotionPacket().apply {
+                    session.netSession.outboundPacket(SetEntityMotionPacket().apply {
                         runtimeEntityId = mc.thePlayer.entityId
                         motion = Vector3f.from(-1.0,0.38, -1.0)
                     })
-                    session.netSession.inboundPacket(MovePlayerPacket().apply {
+                    session.netSession.outboundPacket(MovePlayerPacket().apply {
                         runtimeEntityId = mc.thePlayer.entityId
                         position = pos
                         rotation = mc.thePlayer.vec3Rotation
@@ -41,7 +46,7 @@ class ModuleAntiVoid : CheatModule("AntiVoid"){
                         entityType = 0
                         tick = event.packet.tick
                     })
-                    session.netSession.inboundPacket(MovePlayerPacket().apply {
+                    session.netSession.outboundPacket(MovePlayerPacket().apply {
                         runtimeEntityId = mc.thePlayer.entityId
                         position = pos
                         rotation = mc.thePlayer.vec3Rotation
@@ -51,7 +56,7 @@ class ModuleAntiVoid : CheatModule("AntiVoid"){
                         entityType = 0
                         tick = event.packet.tick
                     })
-                    session.netSession.inboundPacket(MovePlayerPacket().apply {
+                    session.netSession.outboundPacket(MovePlayerPacket().apply {
                         runtimeEntityId = mc.thePlayer.entityId
                         position = pos
                         rotation = mc.thePlayer.vec3Rotation

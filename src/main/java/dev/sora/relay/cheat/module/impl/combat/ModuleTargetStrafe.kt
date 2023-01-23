@@ -11,33 +11,24 @@ import dev.sora.relay.game.utils.movement.MovementUtils
 import kotlin.math.cos
 import kotlin.math.sin
 
-class ModuleTargetStrafe : CheatModule("TargetStrafe") {
-    private val radiusValue = FloatValue("Radius", 2.0f, 1.0f, 5.0f)
+class ModuleTargetStrafe : CheatModule("TargetStrafe","目标环绕") {
+    private var oldMode=""
+    private lateinit var killAura : ModuleKillAura
+    override fun onDisable() {
+        killAura.rotationModeValue.set(oldMode)
+        super.onDisable()
+    }
 
+    override fun onEnable() {
+        killAura = session.moduleManager.getModuleByName("KillAura") as ModuleKillAura
+        oldMode=killAura.rotationModeValue.get()
+        super.onEnable()
+    }
     @Listen
     fun onTick(event: EventTick) {
-        val killAura = session.moduleManager.getModuleByName("KillAura") as ModuleKillAura
-        if (!killAura.state || killAura.entityList.isEmpty() || killAura.entityList.size > 1) return
-        val targetPos = killAura.entityList[0].vec3Position
-        val radius = radiusValue.get()
-        val strafeDirection =
-            MovementUtils.calculateLookAtMovement(targetPos.add(rand(-radius, radius), 0.0, rand(-radius, radius)), mc)
-                .normalize()
-        val p = calculateMotion(strafeDirection.x, strafeDirection.z, .4849f)
-        setMotion(p.first, p.second)
-    }
-
-    private fun setMotion(x: Double, y: Double) {
-        session.netSession.inboundPacket(SetEntityMotionPacket().apply {
-            runtimeEntityId = mc.thePlayer.entityId
-            motion = Vector3f.from(x, 0.0, y)
-        })
-    }
-
-    private fun calculateMotion(moveStrafing: Float, moveForward: Float, speed: Float): Pair<Double, Double> {
-        return Pair(
-            -sin(Math.toRadians(moveStrafing.toDouble())) * speed * moveForward,
-            cos(Math.toRadians(moveStrafing.toDouble())) * speed * moveForward
-        )
+        if(killAura.rotationModeValue.get()=="None"){
+            killAura.rotationModeValue.set("Silent")
+            chat("TargetStrafe need Rotation: Silent or Lock")
+        }
     }
 }

@@ -8,7 +8,7 @@ import dev.sora.relay.cheat.module.CheatModule
 import dev.sora.relay.game.event.Listen
 import dev.sora.relay.game.event.EventPacketInbound
 
-class ModuleNoSkin : CheatModule("NoSkin") {
+class ModuleNoSkin : CheatModule("NoSkin","无皮肤") {
 
     private val skinData by lazy {
         ImageData.of(ByteArray(16384).also { for(i in it.indices) it[i] = Byte.MAX_VALUE })

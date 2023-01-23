@@ -21,6 +21,7 @@ abstract class GameEventCancelable(session: GameSession) : GameEvent(session) {
 class EventTick(session: GameSession) : GameEvent(session)
 
 class EventDisconnect(session: GameSession, val client: Boolean, val reason: DisconnectReason) : GameEvent(session)
+class EventUpdate(session: GameSession, time:Long) : GameEvent(session)
 
 class EventPacketInbound(session: GameSession, val packet: BedrockPacket) : GameEventCancelable(session)
 

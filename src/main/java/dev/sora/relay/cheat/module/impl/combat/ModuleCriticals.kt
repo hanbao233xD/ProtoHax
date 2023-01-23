@@ -1,6 +1,7 @@
 package dev.sora.relay.cheat.module.impl.combat
 
 import com.nukkitx.protocol.bedrock.data.inventory.TransactionType
+import com.nukkitx.protocol.bedrock.packet.AnimatePacket
 import com.nukkitx.protocol.bedrock.packet.InventoryTransactionPacket
 import com.nukkitx.protocol.bedrock.packet.MovePlayerPacket
 import dev.sora.relay.cheat.module.CheatModule
@@ -8,7 +9,7 @@ import dev.sora.relay.cheat.value.ListValue
 import dev.sora.relay.game.event.Listen
 import dev.sora.relay.game.event.EventPacketOutbound
 
-class ModuleCriticals : CheatModule("Criticals") {
+class ModuleCriticals : CheatModule("Criticals","神仙破甲") {
     private val modeValue = ListValue("Mode", arrayOf("HYT"), "HYT")
 
     @Listen

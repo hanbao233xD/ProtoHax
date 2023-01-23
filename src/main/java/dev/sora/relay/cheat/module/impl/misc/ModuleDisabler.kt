@@ -7,6 +7,8 @@ import com.nukkitx.protocol.bedrock.packet.MovePlayerPacket
 import com.nukkitx.protocol.bedrock.packet.PlayerAuthInputPacket
 import com.nukkitx.protocol.bedrock.packet.NetworkStackLatencyPacket
 import dev.sora.relay.cheat.module.CheatModule
+import dev.sora.relay.cheat.value.FloatValue
+import dev.sora.relay.cheat.value.IntValue
 import dev.sora.relay.cheat.value.ListValue
 import dev.sora.relay.game.entity.EntityPlayerSP
 import dev.sora.relay.game.event.Listen
@@ -15,24 +17,29 @@ import dev.sora.relay.game.event.EventPacketOutbound
 import dev.sora.relay.game.event.EventTick
 import dev.sora.relay.game.utils.TimerUtil
 
-class ModuleDisabler : CheatModule("Disabler") {
+class ModuleDisabler : CheatModule("Disabler","禁用反作弊") {
 
     private val modeValue = ListValue("Mode", arrayOf("LagDetection","HYT","CPSCancel","Lifeboat","Mineplex","CubeCraft"), "HYT")
     var timer=TimerUtil()
+    var speedChecker=TimerUtil()
     private var lagPacketCount=0;
     @Listen
     fun onPacketInbound(event: EventPacketInbound) {
-        if(modeValue.get() == "LagDetection") {
+        if(modeValue.get() == "LagDetection" || modeValue.get() == "HYT") {
             if (event.packet is MovePlayerPacket) {
                 lagPacketCount++
                 timer.reset()
             }
-            if (timer.delay(1000F)) {
-                if (lagPacketCount >= 2) {
-                    mc.moduleManager.getModuleByName("Speed")!!.state = false
-                    mc.moduleManager.getModuleByName("Fly")!!.state = false
+            if (timer.delay(2000F)) {
+                if(mc.moduleManager.getModuleByName("Speed")!!.state || mc.moduleManager.getModuleByName("Fly")!!.state) {
+                    if (lagPacketCount >= 3) {
+                        mc.moduleManager.getModuleByName("Speed")!!.state = false
+                        mc.moduleManager.getModuleByName("Fly")!!.state = false
+                    }
+                    lagPacketCount = 0;
+                    chat("LagDetection自动关闭Fly Speed")
+                    timer.reset()
                 }
-                lagPacketCount = 0;
             }
         }
     }
@@ -44,11 +51,6 @@ class ModuleDisabler : CheatModule("Disabler") {
             if (packet is LevelSoundEventPacket){
                 if(packet.sound == SoundEvent.ATTACK_STRONG || packet.sound == SoundEvent.ATTACK_NODAMAGE)
                     event.cancel()
-            }
-        }
-        if(modeValue.get() == "HYT"){
-            if (packet is PlayerAuthInputPacket){
-                if(packet.tick%5==0L) session.thePlayer.attackEntity(mc.thePlayer, event.session, EntityPlayerSP.SwingMode.NONE)
             }
         }
         else if(modeValue.get() == "Lifeboat"){

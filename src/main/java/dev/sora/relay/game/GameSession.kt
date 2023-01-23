@@ -2,14 +2,15 @@ package dev.sora.relay.game
 
 import com.google.gson.JsonParser
 import com.nukkitx.protocol.bedrock.BedrockPacket
-import com.nukkitx.protocol.bedrock.data.AuthoritativeMovementMode
-import com.nukkitx.protocol.bedrock.data.PlayerActionType
-import com.nukkitx.protocol.bedrock.data.ScoreInfo
-import com.nukkitx.protocol.bedrock.data.SyncedPlayerMovementSettings
+import com.nukkitx.protocol.bedrock.data.*
 import com.nukkitx.protocol.bedrock.packet.*
 import dev.sora.relay.RakNetRelaySession
 import dev.sora.relay.RakNetRelaySessionListener
+import dev.sora.relay.cheat.BasicThing.Companion.chat
+import dev.sora.relay.cheat.command.CommandManager
 import dev.sora.relay.cheat.module.ModuleManager
+import dev.sora.relay.cheat.module.impl.combat.ModuleAntiBot.chat
+import dev.sora.relay.cheat.module.impl.misc.ModuleChatBypass
 import dev.sora.relay.game.entity.EntityPlayerSP
 import dev.sora.relay.game.event.EventManager
 import dev.sora.relay.game.event.EventPacketInbound
@@ -28,6 +29,7 @@ class GameSession : RakNetRelaySessionListener.PacketListener {
     val theWorld = WorldClient(this)
     lateinit var moduleManager: ModuleManager
     val eventManager = EventManager()
+    var cnMode = true
 
     lateinit var netSession: RakNetRelaySession
     private val hookedTimer: TimerUtil = TimerUtil()
@@ -47,32 +49,34 @@ class GameSession : RakNetRelaySessionListener.PacketListener {
         }
 
         if (packet is StartGamePacket) {
-            event.cancel()
-            packet.playerMovementSettings = SyncedPlayerMovementSettings().apply {
-                movementMode = AuthoritativeMovementMode.SERVER
-                rewindHistorySize = 0
-                isServerAuthoritativeBlockBreaking = false
+            if(cnMode) {
+                event.cancel()
+                packet.playerMovementSettings = SyncedPlayerMovementSettings().apply {
+                    movementMode = AuthoritativeMovementMode.SERVER
+                    rewindHistorySize = 0
+                    isServerAuthoritativeBlockBreaking = true
+                }
+                packet.authoritativeMovementMode = AuthoritativeMovementMode.SERVER
+                println("Hooked$packet")
+                hookedTimer.reset()
+                netSession.inboundPacket(packet)
+                return false
             }
-            packet.authoritativeMovementMode = AuthoritativeMovementMode.SERVER
-            println("Hooked$packet")
-            hookedTimer.reset()
-            netSession.inboundPacket(packet)
             thePlayer.entityId = packet.runtimeEntityId
             theWorld.entityMap.clear()
-            return false
         } else if (packet is RespawnPacket) {
             thePlayer.entityId = packet.runtimeEntityId
-            theWorld.entityMap.clear()
         }
         if (hookedTimer.delay(15000f) && !hooked) {
-            if(MovementUtils.isMoving(this)) netSession.inboundPacket(TextPacket().apply {
-                type = TextPacket.Type.RAW
-                isNeedsTranslation = false
-                message = "[§9§lProtoHax§r] Hooked StartGamePacket, Welcome!"
-                xuid = ""
-                sourceName = ""
-            })
-            hooked = true
+                if (MovementUtils.isMoving(this)) netSession.inboundPacket(TextPacket().apply {
+                    type = TextPacket.Type.RAW
+                    isNeedsTranslation = false
+                    message = "[§9§lProtoHax§r] Hooked StartGamePacket, Welcome!"
+                    xuid = ""
+                    sourceName = ""
+                })
+                hooked = true
+
         }
         thePlayer.onPacket(packet)
         theWorld.onPacket(packet)
@@ -99,20 +103,30 @@ class GameSession : RakNetRelaySessionListener.PacketListener {
                 }
             }
         } else if (packet is PlayerAuthInputPacket) {
-            if(!moduleManager.getModuleByName("FreeCam")!!.state){
-                netSession.outboundPacket(MovePlayerPacket().apply {
-                    runtimeEntityId = thePlayer.entityId
-                    position = packet.position
-                    rotation = packet.rotation
-                    mode = MovePlayerPacket.Mode.NORMAL
-                    isOnGround = (thePlayer.motionY==0.0)
-                    ridingRuntimeEntityId = 0
-                    entityType = 0
-                    tick = packet.tick
-                })
+            if(cnMode) {
+                if (!moduleManager.getModuleByName("FreeCam")!!.state) {
+                    netSession.outboundPacket(MovePlayerPacket().apply {
+                        runtimeEntityId = thePlayer.entityId
+                        position = packet.position
+                        rotation = packet.rotation
+                        mode = MovePlayerPacket.Mode.NORMAL
+                        isOnGround = (thePlayer.motionY == 0.0)
+                        ridingRuntimeEntityId = 0
+                        entityType = 0
+                        tick = packet.tick
+                    })
+                }
             }
+            /*if(packet.playerActions.isNotEmpty())chat(this,"Actions: "+packet.playerActions)
+            for (playerAction in packet.playerActions) {
+                netSession.outboundPacket(PlayerActionPacket().apply {
+                    runtimeEntityId=thePlayer.entityId
+                    action=playerAction.action
+                    blockPosition=playerAction.blockPosition
+                })
+            }*/
         }
-        if(packet !is MovePlayerPacket) thePlayer.handleClientPacket(packet, this)
+        if(packet !is MovePlayerPacket && cnMode) thePlayer.handleClientPacket(packet, this)
         return true
     }
 
@@ -126,7 +140,10 @@ class GameSession : RakNetRelaySessionListener.PacketListener {
         if (event.isCanceled()) {
             return
         }
-
+        /*val chatBypass = moduleManager.getModuleByName("ChatBypass") as ModuleChatBypass
+        if(event.packet is TextPacket && chatBypass.state){
+            event.packet.message=chatBypass.getStr(event.packet.message)
+        }*/
         netSession.outboundPacket(packet)
     }
 

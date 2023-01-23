@@ -12,7 +12,7 @@ import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 
-class ModuleOpFightBot : CheatModule("OPFightBot") {
+class ModuleOpFightBot : CheatModule("OPFightBot","战斗机器人") {
 
     private val modeValue = ListValue("Mode", arrayOf("Random", "Strafe", "Back"), "Random")
     private val rangeValue = FloatValue("Range", 1.5f, 1.5f, 4f)

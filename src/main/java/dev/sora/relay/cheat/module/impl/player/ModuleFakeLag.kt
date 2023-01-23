@@ -10,7 +10,7 @@ import dev.sora.relay.game.event.EventPacketOutbound
 import dev.sora.relay.game.utils.TimerUtil
 import java.util.concurrent.LinkedBlockingQueue
 
-class ModuleFakeLag :CheatModule("FakeLag") {
+class ModuleFakeLag :CheatModule("FakeLag","伪装闪现") {
     private val packetList = LinkedBlockingQueue<BedrockPacket>()
     private val speedValue = FloatValue("timer" ,500F,0f,3000f)
     private val onlyMoveValue = BoolValue("OnlyMove", true)

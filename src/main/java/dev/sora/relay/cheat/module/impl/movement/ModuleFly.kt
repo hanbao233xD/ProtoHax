@@ -15,16 +15,18 @@ import dev.sora.relay.game.event.Listen
 import dev.sora.relay.game.event.EventPacketInbound
 import dev.sora.relay.game.event.EventPacketOutbound
 import dev.sora.relay.game.event.EventTick
+import dev.sora.relay.game.utils.TimerUtil
 import dev.sora.relay.game.utils.movement.MovementUtils.isMoving
 import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.sin
 
-class ModuleFly : CheatModule("Fly") {
+class ModuleFly : CheatModule("Fly","飞行") {
 
-    private val modeValue = ListValue("FlyMode", arrayOf("Motion", "Vanilla", "Mineplex"), "Motion")
+    private val modeValue = ListValue("FlyMode", arrayOf("Motion", "Vanilla", "Mineplex", "ZoomFly"), "Motion")
     private val motionYValue = FloatValue("MotionY", 0.32f, 0f, 2f)
     private val motionXZValue = FloatValue("MotionXZ", 0.38f, 0f, 2f)
+    private val zoomSpeedValue = FloatValue("ZoomSpeed", 0.98f, 0f, 1f)
 
     private var launchY = 0.0
     private var canFly = false
@@ -57,6 +59,26 @@ class ModuleFly : CheatModule("Fly") {
     override fun onEnable() {
         canFly = false
         launchY = session.thePlayer.posY
+        onDamage=0
+        if(modeValue.get()=="ZoomFly") {
+            var pos = Vector3f.from(
+                mc.thePlayer.posX,
+                mc.thePlayer.posY - 4,
+                mc.thePlayer.posZ
+            )
+            session.netSession.inboundPacket(MovePlayerPacket().apply {
+                runtimeEntityId = mc.thePlayer.entityId
+                position = pos
+                rotation = mc.thePlayer.vec3Rotation
+                mode = MovePlayerPacket.Mode.NORMAL
+                isOnGround = true
+                ridingRuntimeEntityId = 0
+                entityType = 0
+                tick = mc.thePlayer.tickExists
+            })
+            chat("注意!受到伤害后你可以飞行1秒!请先面向目标，并找机会让自己受到伤害(如弓箭,或敌人打击)飞行途中按下跳跃键取消飞行!")
+            chat("等待伤害...")
+        }
     }
 
     @Listen
@@ -87,6 +109,9 @@ class ModuleFly : CheatModule("Fly") {
         }
     }
 
+    private var onDamage = 0
+    private val damageTimer = TimerUtil()
+
     @Listen
     fun onPacketInbound(event: EventPacketInbound) {
         if (event.packet is UpdateAbilitiesPacket) {
@@ -98,6 +123,17 @@ class ModuleFly : CheatModule("Fly") {
             event.session.netSession.inboundPacket(abilityPacket.apply {
                 uniqueEntityId = event.session.thePlayer.entityId
             })
+        }
+        if (onDamage==1 && damageTimer.delay(1000f)) {
+            onDamage = 0
+            state=false
+        }
+        if (event.packet is EntityEventPacket) {
+            if (event.packet.type== EntityEventType.HURT && event.packet.runtimeEntityId==mc.thePlayer.entityId){
+                onDamage=1
+                damageTimer.reset()
+                chat("ZoomFly!")
+            }
         }
     }
 
@@ -132,6 +168,19 @@ class ModuleFly : CheatModule("Fly") {
                     event.packet.isOnGround = true
                     event.packet.position = event.packet.position.let {
                         Vector3f.from(it.x, launchY.toFloat(), it.z)
+                    }
+                }
+            }
+            modeValue.get() == "ZoomFly" -> {
+                if (!mc.thePlayer.inputData.contains(PlayerAuthInputData.JUMPING)){
+                    if (event.packet is PlayerAuthInputPacket && onDamage==1) {
+                        strafe(zoomSpeedValue.get(),0.05f)
+                    }
+                }else{
+                    if(onDamage==1) {
+                        onDamage = 0
+                        state = false
+                        chat("Stop!")
                     }
                 }
             }

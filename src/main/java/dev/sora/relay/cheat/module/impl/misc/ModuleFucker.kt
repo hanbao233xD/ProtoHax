@@ -2,4 +2,5 @@ package dev.sora.relay.cheat.module.impl.misc
 
 import dev.sora.relay.cheat.module.CheatModule
 
-class ModuleFreeCam : CheatModule("FreeCam","灵魂出窍")
+class ModuleFucker : CheatModule("Fucker","自动挖掘") {
+}

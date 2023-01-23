@@ -9,6 +9,7 @@ import com.nukkitx.protocol.bedrock.data.inventory.TransactionType
 import com.nukkitx.protocol.bedrock.packet.*
 import dev.sora.relay.RakNetRelaySession
 import dev.sora.relay.cheat.BasicThing
+import dev.sora.relay.cheat.module.impl.combat.ModuleKillAura
 import dev.sora.relay.game.GameSession
 import java.util.*
 
@@ -60,6 +61,13 @@ class EntityPlayerSP : EntityPlayer(0L, UUID.randomUUID(), "") {
     }
 
     fun attackEntity(entity: Entity, session: GameSession, swingValue: SwingMode = SwingMode.BOTH) {
+        if (session.moduleManager.getModuleByName("KillAura")!!.state){
+            if((session.moduleManager.getModuleByName("KillAura")!! as ModuleKillAura).hurtTimeValue.get()){
+                if(!entity.hurtTime.delay(400f)){
+                    return
+                }
+            }
+        }
         AnimatePacket().apply {
             action = AnimatePacket.Action.SWING_ARM
             runtimeEntityId = session.thePlayer.entityId
@@ -104,6 +112,19 @@ class EntityPlayerSP : EntityPlayer(0L, UUID.randomUUID(), "") {
     }
     fun getJavaPosY() : Double{
         return posY-1.62
+    }
+
+    fun swing(swingValue: SwingMode = SwingMode.BOTH,session:GameSession) {
+        AnimatePacket().apply {
+            action = AnimatePacket.Action.SWING_ARM
+            runtimeEntityId = entityId
+        }.also {
+            // send the packet back to client in order to display the swing animation
+            if (swingValue == SwingMode.BOTH || swingValue == SwingMode.CLIENTSIDE)
+                session.netSession.inboundPacket(it)
+            if (swingValue == SwingMode.BOTH || swingValue == SwingMode.SERVERSIDE)
+                session.sendPacket(it)
+        }
     }
 
     enum class SwingMode {

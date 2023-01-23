@@ -7,7 +7,7 @@ import dev.sora.relay.game.event.EventPacketInbound
 import dev.sora.relay.game.event.EventTick
 import dev.sora.relay.game.utils.TimerUtil
 
-class ModuleAntiCrasher : CheatModule("AntiCrasher") {
+class ModuleAntiCrasher : CheatModule("AntiCrasher","防崩溃") {
     private var packetCount = 0
     private val timer = TimerUtil()
 

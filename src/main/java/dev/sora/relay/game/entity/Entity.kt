@@ -2,11 +2,14 @@ package dev.sora.relay.game.entity
 
 import com.nukkitx.math.vector.Vector3f
 import com.nukkitx.protocol.bedrock.BedrockPacket
+import com.nukkitx.protocol.bedrock.data.entity.EntityEventType
 import com.nukkitx.protocol.bedrock.packet.AddEntityPacket
 import com.nukkitx.protocol.bedrock.packet.AddPlayerPacket
+import com.nukkitx.protocol.bedrock.packet.EntityEventPacket
 import com.nukkitx.protocol.bedrock.packet.MoveEntityAbsolutePacket
 import dev.sora.relay.game.event.Listen
 import dev.sora.relay.game.event.EventPacketInbound
+import dev.sora.relay.game.utils.TimerUtil
 import kotlin.math.sqrt
 
 abstract class Entity(open val entityId: Long) {
@@ -18,6 +21,7 @@ abstract class Entity(open val entityId: Long) {
     open var prevPosX = 0.0
     open var prevPosY = 0.0
     open var prevPosZ = 0.0
+    open var hurtTime = TimerUtil()
 
     open var rotationYaw = 0f
     open var rotationPitch = 0f
@@ -97,7 +101,15 @@ abstract class Entity(open val entityId: Long) {
         } else if(packet is AddPlayerPacket && packet.runtimeEntityId == entityId){
             uniqueEntityId = packet.uniqueEntityId
             entityType = 63
-        } /* else if (packet is MoveEntityDeltaPacket && packet.runtimeEntityId == entityId) {
+        } else if (packet is EntityEventPacket) {
+            if (packet.type== EntityEventType.HURT && packet.runtimeEntityId==entityId){
+                if(hurtTime.delay(500f)){
+                    hurtTime.reset()
+                }
+            }
+        }
+
+    /* else if (packet is MoveEntityDeltaPacket && packet.runtimeEntityId == entityId) {
             // TODO
         } */
     }

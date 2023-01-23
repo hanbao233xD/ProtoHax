@@ -7,7 +7,7 @@ import dev.sora.relay.game.event.Listen
 import dev.sora.relay.game.event.EventTick
 import dev.sora.relay.game.utils.constants.Effect
 
-class ModuleHighJump : CheatModule("HighJump") {
+class ModuleHighJump : CheatModule("HighJump","高跳") {
     private val amplifierValue = IntValue("levels", 5, 1, 10)
 
     @Listen

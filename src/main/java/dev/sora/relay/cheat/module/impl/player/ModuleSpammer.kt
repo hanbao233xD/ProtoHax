@@ -10,7 +10,7 @@ import dev.sora.relay.utils.getRandomString
 import dev.sora.relay.utils.timing.TheTimer
 import kotlin.random.Random
 
-class ModuleSpammer : CheatModule("Spammer") {
+class ModuleSpammer : CheatModule("Spammer","自动广告") {
 
     private val delayValue = IntValue("Delay", 5000, 500, 10000)
     private val messageValue = StringValue("Msg", "@[!]我正在使用ProtoHax|获取→723293793")
@@ -25,7 +25,7 @@ class ModuleSpammer : CheatModule("Spammer") {
                 xuid = event.session.xuid
                 sourceName = event.session.displayName
                 platformChatId = ""
-                message = "${messageValue.get()} >${getRandomString(10 + Random.nextInt(5))}<"
+                message = "${messageValue.get()} >${getRandomString(2 + Random.nextInt(5))}<"
             })
             spamTimer.reset()
         }

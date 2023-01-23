@@ -15,6 +15,12 @@ class ModuleManager(private val session: GameSession) {
         }
         return null
     }
+    fun getModuleByChinese(name:String):CheatModule?{
+        for (module in modules) {
+            if(module.chinese.equals(name,true)) return module
+        }
+        return null
+    }
     fun registerModule(module: CheatModule) {
         module.session = session
         module.mc = session
@@ -23,8 +29,14 @@ class ModuleManager(private val session: GameSession) {
     }
 
     fun init() {
+        registerModule(ModuleAntiAim())
+        registerModule(ModuleNoChat())
+        //registerModule(ModuleServerCrasher())
+        //registerModule(ModuleChatBypass())
+        registerModule(ModuleAutoL())
+        registerModule(ModulePacketLogger())
         registerModule(ModuleFly())
-        registerModule(ModuleTP())
+        //registerModule(ModuleTP())
         registerModule(ModuleVelocity())
         registerModule(ModuleKillAura())
         registerModule(ModuleSpammer())
@@ -32,23 +44,24 @@ class ModuleManager(private val session: GameSession) {
         registerModule(ModuleNoResetRotation())
         registerModule(ModuleTPFly())
         registerModule(ModuleDisabler())
-        registerModule(ModuleOpFightBot())
+        //registerModule(ModuleOpFightBot())
         registerModule(ModuleNoSkin())
         registerModule(ModuleDeviceSpoof())
-        registerModule(ModulePacketLogger())
-        registerModule(ModuleResourcePackSpoof())
+        registerModule(ModuleResourcePackInject)
+        registerModule(ModuleComboOneHitExploit())
         registerModule(ModuleRemoteStore())
         registerModule(ModuleAntiBot)
         registerModule(ModuleNoFall())
         registerModule(ModuleAntiKick())
         registerModule(ModuleAntiCrasher())
         registerModule(ModuleAntiVoid())
-        //registerModule(ModuleCrasher())
+        registerModule(ModuleCrasher())
+        registerModule(ModuleSpawn())
         registerModule(ModuleInfiniteAura())
         registerModule(ModuleHighJump())
         registerModule(ModuleAirJump())
         registerModule(ModuleFreeCam())
-        //registerModule(ModuleScaffold())
+        registerModule(ModuleScaffold())
         registerModule(ModuleHUD())
         registerModule(ModuleTeams)
         registerModule(ModuleSpeed())
@@ -58,6 +71,8 @@ class ModuleManager(private val session: GameSession) {
         registerModule(ModuleCriticals())
         registerModule(ModuleFastBreak())
         registerModule(ModuleTargetStrafe())
+        registerModule(ModuleNoHurt())
+        registerModule(ModuleGodMode())
         for (module in modules) {
             module.session.moduleManager=this
         }

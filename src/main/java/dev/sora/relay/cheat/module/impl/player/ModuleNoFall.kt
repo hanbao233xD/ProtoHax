@@ -10,7 +10,7 @@ import com.nukkitx.protocol.bedrock.data.PlayerActionType
 import dev.sora.relay.cheat.value.ListValue
 
 
-class ModuleNoFall : CheatModule("NoFall") {
+class ModuleNoFall : CheatModule("NoFall","无掉落伤害") {
     private val modeValue = ListValue("Mode", arrayOf("OnGround","AwayNoGround","Nukkit","CubeCraft"), "OnGround")
 
     @Listen

@@ -45,13 +45,14 @@ class CommandManager(private val session: GameSession) : Listener {
             BasicThing.chat(session, "An error occurred while executing the command($e)")
         }
     }
-
     @Listen
     fun onPacketOutbound(event: EventPacketOutbound) {
         val packet = event.packet
-        if (packet is TextPacket && packet.message.startsWith(PREFIX)) {
-            exec(packet.message.substring(PREFIX.length))
-            event.cancel()
+        if (packet is TextPacket) {
+            if(packet.message.startsWith(PREFIX)) {
+                exec(packet.message.substring(PREFIX.length))
+                event.cancel()
+            }
         }
     }
 
